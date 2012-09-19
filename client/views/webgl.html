@@ -1,0 +1,48 @@
+
+<!-- saved from url=(0066)http://webglsamples.googlecode.com/hg/hello-webgl/hello-webgl.html -->
+<html><head>
+<SocketStream/>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> 
+<title>Hello, WebGL (adopted from Learning WebGL lesson 2)</title> 
+ 
+ 
+<script id="shader-fs" type="x-shader/x-fragment"> 
+    precision mediump float;
+
+    varying vec4 vColor;
+    void main(void) {
+        gl_FragColor = vColor;
+    }
+</script> 
+ 
+<script id="shader-vs" type="x-shader/x-vertex"> 
+    attribute vec3 positionAttr;
+    attribute vec4 colorAttr;
+ 
+    varying vec4 vColor;
+ 
+    void main(void) {
+        gl_Position = vec4(positionAttr, 1.0);
+        vColor = colorAttr;
+    }
+</script> 
+ 
+</head> 
+ 
+
+<body> 
+
+A simple example adopted from Giles
+Thomas' <a href="http://learningwebgl.com/blog/?p=134">Learning WebGL
+Lesson 2</a>. It has been modified to eliminate dependencies on all
+external libraries, and to use a single buffer object for all of the
+geometric data.
+
+<br>
+<br>
+
+    <canvas id="lesson02-canvas" style="border: none;" width="500" height="500"></canvas> 
+ 
+ 
+
+</body></html>

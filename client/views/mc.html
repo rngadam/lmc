@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<!--*
+ * SocketStream application Management Console for Lophilo
+ *
+ * Author: Ricky Ng-Adam <rngadam@lophilo.com>
+
+ Copyright 2012 Lophilo
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *-->
+<html lang="en">
+<head>
+	<SocketStream/>
+</head>
+<body>
+<div class="navbar">
+
+	<div class="navbar-inner">	
+		<ul class="nav nav-tabs">
+			<a class="brand" href="http://lophilo.com" target="new">Lophilo</a>
+			<li><a href="#system" data-placement="bottom" data-toggle="tab" rel="tooltip" title="This is the system tab with some versioning and status information">System</a></li>
+			<li><a href="#editing" data-toggle="tab" rel="tooltip" title="Existing apps and the ability to create new ones with Cloud9">Applications</a></li>
+			<li><a href="#settings" data-toggle="tab" rel="tooltip" title="General system settings (security, services, accounts)">Settings</a></li>	  
+			<li><a href="https://github.com/Lophilo/lophilo/wiki" target="new" rel="tooltip" title="System documentation">Help</a></li>	  
+	  		<li><a href="#system" rel="tooltip" title="Load average (1mn)"><span class="dynamicsparkline">Loading..</span></a></li>
+		</ul>
+	</div>		
+
+	<div id="myTabContent" class="tab-content">	
+	  <div class="tab-pane fade in active" id="system">
+	  	<div class="well">System health and management</div>
+		<div class="btn-group" data-toggle="buttons-radio">
+		  <button type="button" class="btn">Log Out...</button>
+		  <button type="button" class="btn">Restart...</button>
+		  <button type="button" class="btn">Switch off...</button>
+		</div>	
+
+		<div class="accordion" id="accordion2">
+		  <div class="accordion-group">
+		    <div class="accordion-heading">
+		      <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
+		        Statistics
+		      </a>
+		    </div>
+		    <div id="collapseOne" class="accordion-body collapse in">
+		      <div class="accordion-inner" data-bind="with: stats">
+		        <p>Uptime console: <span data-bind="text: processDisplay"></span></p>
+		        <p>Uptime system: <span data-bind="text: systemDisplay"></span></p>
+		      </div>
+		    </div>
+		  </div>
+		  <div class="accordion-group">
+		    <div class="accordion-heading">
+		      <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
+		        Versions
+		      </a>
+		    </div>
+		    <div id="collapseTwo" class="accordion-body collapse">
+		      <div class="accordion-inner" data-bind="with: versions"> 
+		  		<p>Versions</p>
+		  		<ul data-bind="foreach: data">
+			  		<li><span data-bind="text: name"></span>: <span data-bind="text: version"></span>
+			  	</ul>
+		      </div>
+		    </div>
+		  </div>
+		</div>	  	
+  	    
+	  </div>
+
+	  <div class="tab-pane fade" id="editing"  data-bind="with: apps">
+	  	<div class="well">Editing and creating Lophilo applications</div>	  	
+		<form data-bind="submit:addItem">
+		    Add project: <input type="text" data-bind='value:itemToAdd, valueUpdate: "afterkeydown"' />
+		    <button type="submit" data-bind="enable: itemToAdd().length > 0">Add</button>
+		</form>
+		 
+		<p>Existing projects</p>
+		<select height="10" data-bind="options:allItems, selectedOptions:selectedItems"> </select>
+		 
+		<div>
+			<button>Run</button>	
+		    <button>Edit</button>	
+		    <button data-bind="click: removeSelected, enable: selectedItems().length > 0">Remove</button>
+		    <button data-bind="click: sortItems, enable: allItems().length > 1">Sort</button>		
+		</div>	    
+	  </div>
+	  
+	  <div class="tab-pane fade" id="software">
+	  	<div class="well">Software updates and installs</div>	  
+	  </div>
+	  
+	  <div class="tab-pane fade" id="settings">
+	  	<div class="well">General system settings (security, services, accounts)</div>
+			<ul class="thumbnails">
+				<li class="span2">
+					<div class="thumbnail">
+					  <img src="/icons/system-config-users.svg" alt="Configure users accounts" width=128 height=128>
+					 <center>Users</center>					  
+					</div>
+				</li>	
+
+				<li class="span2">
+					<div class="thumbnail">
+					  <img src="/icons/system-software-update.svg" alt="Update system software" width=128 height=128>
+					  <center>Updates</center>
+					</div>
+				</li>	
+
+				<li class="span2">
+					<div class="thumbnail">
+					  <img src="/icons/multimedia-volume-control.svg" alt="Set system time" width=128 height=128>
+					  <center>Sound</center>
+					</div>
+				</li>			  			  
+			 
+				<li class="span2">
+				    <div class="thumbnail">
+				      <img src="/icons/preferences-system-time.svg" alt="Set system time" width=128 height=128>
+					  <center>Time</center>
+				    </div>
+			  	</li>	
+
+			</ul>	  	
+	  </div>
+
+	</div>
+</div>	
+</body>
+</html>
