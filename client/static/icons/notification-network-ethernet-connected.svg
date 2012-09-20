@@ -969,7 +969,7 @@
 	</g>
 </g>
 <g id="Layer_3">
-	<path id="path3499_3_" sodipodi:nodetypes="ccccccccccccc" opacity="0.4" fill="#FFFFFF" d="M21.028,13.083v1.986h-5.958v3.973
+	<path id="path3499_3_" opacity="0.4" fill="#FFFFFF" d="M21.028,13.083v1.986h-5.958v3.973
 		h-3.974v17.876h27.808V19.042h-3.971v-3.973h-5.961v-1.986H21.028z"/>
 </g>
 <g id="Layer_1">
@@ -977,7 +977,7 @@
 		<stop  offset="0" style="stop-color:#1F1F1F"/>
 		<stop  offset="1" style="stop-color:#000000"/>
 	</linearGradient>
-	<path id="path3499_2_" sodipodi:nodetypes="ccccccccccccc" fill="url(#path3499_1_)" d="M20.028,12.083v1.986h-5.958v3.973h-3.974
+	<path id="path3499_2_" fill="url(#path3499_1_)" d="M20.028,12.083v1.986h-5.958v3.973h-3.974
 		v17.876h27.808V18.042h-3.971v-3.973h-5.961v-1.986H20.028z"/>
 	<g>
 		<linearGradient id="rect3503_2_" gradientUnits="userSpaceOnUse" x1="22.3828" y1="33.5669" x2="22.3828" y2="30.7681">

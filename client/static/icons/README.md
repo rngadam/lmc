@@ -9,3 +9,6 @@ preferences-system-time.svg
 system-config-users.svg
 system-software-update.svg
 utilities-terminal.svg
+
+
+Node.JS logo from http://nodejs.org/logos/
