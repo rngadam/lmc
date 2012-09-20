@@ -21,8 +21,35 @@
  *
  */
 
-var http = require('http'),
-    ss = require('socketstream');
+var http = require('http');
+var ss = require('socketstream');
+var everyauth = require('everyauth');
+var assert = require('assert');
+
+var GITHUB_CLIENT_ID = '8b19f4a1ceb92a50819b';
+var GITHUB_CLIENT_SECRET = '8deb9798993c0a1a937e6fb90416b287867cbb48';
+var COOKIE_SECRET = 'My kitten is a bit crazy'; // generate and read from disk
+var SESSION_SECRET = 'His name is Chewie';
+
+everyauth.github
+  .appId(GITHUB_CLIENT_ID)
+  .appSecret(GITHUB_CLIENT_SECRET)
+  .entryPath('/auth/github')
+  .callbackPath('/auth/github/callback')
+  .scope('repo')
+  .findOrCreateUser( function (session, accessToken, accessTokenExtra, githubUserMetadata) {
+    session.oauth = accessToken;
+    session.userId = githubUserMetadata.login;
+    session.save();
+    return true;
+  })
+  .redirectPath('/');
+
+exports.configureEveryAuth = function(ss) {
+  ss.http.middleware.prepend(ss.http.connect.bodyParser());
+  ss.http.middleware.append(everyauth.middleware());
+}
+
 
 // Define a single-page client called 'main'
 ss.client.define('main', {
@@ -71,6 +98,13 @@ ss.client.define('bootstrap', {
   tmpl: '*'
 });
 
+ss.client.define('test', {
+  view: 'test.html',
+  css: ['bootstrap'],
+  code: [ 'libs/jquery.min.js', 'libs/bootstrap.js', 'libs/knockout-2.1.0.js', 'test'],
+  tmpl: '*'
+});
+
 ss.client.define('mc', {
   view: 'mc.html',
   css: ['bootstrap'],
@@ -113,11 +147,19 @@ ss.http.route('/bootstrap', function(req, res){
   res.serveClient('bootstrap');
 });
 
+ss.http.route('/test', function(req, res){
+  res.serveClient('test');
+});
+
 // Code Formatters
+console.dir(ss.client);
 ss.client.formatters.add(require('ss-stylus'));
 
 // Use server-side compiled Hogan (Mustache) templates. Others engines available
 ss.client.templateEngine.use(require('ss-hogan'));
+
+// middleware
+//require('./server/backup/auth').configureEveryAuth(ss);
 
 // Minimize and pack assets if you type: SS_ENV=production node app.js
 if (ss.env === 'production') ss.client.packAssets();
