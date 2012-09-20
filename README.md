@@ -34,6 +34,10 @@ SocketStream offers:
 * modify ./app.js to ss.client.define your app dependencies and ss.http.route to route a URL to your app.
 * test (node-mon and socketstream should automatically reload on app change)
 
+## Dependencies
+
+apt-get install libpam0g-dev
+
 ## Copyright and license notice
 
 This software has been developed by:
