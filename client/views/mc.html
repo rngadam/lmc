@@ -82,20 +82,35 @@
 
 	  <div class="tab-pane fade" id="editing"  data-bind="with: apps">
 	  	<div class="well">Editing and creating Lophilo applications</div>	  	
-		<form data-bind="submit:addItem">
-		    Add project: <input type="text" data-bind='value:itemToAdd, valueUpdate: "afterkeydown"' />
-		    <button type="submit" data-bind="enable: itemToAdd().length > 0">Add</button>
-		</form>
-		 
-		<p>Existing projects</p>
-		<select height="10" data-bind="options:allItems, selectedOptions:selectedItems"> </select>
-		 
-		<div>
-			<button>Run</button>	
-		    <button>Edit</button>	
-		    <button data-bind="click: removeSelected, enable: selectedItems().length > 0">Remove</button>
-		    <button data-bind="click: sortItems, enable: allItems().length > 1">Sort</button>		
-		</div>	    
+			<ul class="thumbnails" data-bind="foreach: allItems">
+
+				<div  data-bind="if: $index() == 0">
+				<li class="span2">
+					<div class="thumbnail">
+					  	<a href="#new-app" role="button" class="btn" data-toggle="modal">
+					  		<img src="/icons/list-add.svg" alt="test" width=128 height=128>
+					  	</a>
+					 	<center>
+					 		Add new...
+					 	</center>							
+					</div>
+				</li>
+				</div>
+				<li class="span2">
+					<div class="thumbnail">
+					  	<a href="" data-bind="attr: {href: url}" role="button" class="btn" data-toggle="modal">
+					  		<img data-bind="attr: {src: icon}" alt="test" width=128 height=128>
+					  	</a>
+					 	<center>
+					 		<span data-bind="text: name"></span>
+					 		<p>
+					 		<a class="btn btn-small" href="#"><i class="icon-pencil">E</i></a>
+					 		<a class="btn btn-small" href="#"><i class="icon-trash">X</i></a>
+					 		</p>
+					 	</center>					  
+					</div>
+				</li>
+			</ul>	  	   
 	  </div>
 	  
 	  <div class="tab-pane fade" id="software">
@@ -121,7 +136,7 @@
 
 				<li class="span2">
 					<div class="thumbnail">
-					  <img src="/icons/multimedia-volume-control.svg" alt="Set system time" width=128 height=128>
+					  <img src="/icons/multimedia-volume-control.svg" alt="Multimedia volume control" width=128 height=128>
 					  <center>Sound</center>
 					</div>
 				</li>			  			  
@@ -133,10 +148,58 @@
 				    </div>
 			  	</li>	
 
+				<li class="span2">
+				    <div class="thumbnail">
+				      <img src="/icons/notification-network-ethernet-connected.svg" alt="Configure network" width=128 height=128>
+					  <center>Networking</center>
+				    </div>
+			  	</li>				  	
+
+				<li class="span2">
+				    <div class="thumbnail">
+				      <img src="/icons/gnome-dev-media-sdmmc.svg" alt="Configure MicroSD and SD storage" width=128 height=128>
+					  <center>Storage</center>
+				    </div>
+			  	</li>
+
 			</ul>	  	
 	  </div>
 
-	</div>
+	</div> <!--tab content-->
+
 </div>	
+
+<div class="modal hide" id="new-app" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+    <h3 id="myModalLabel">Adding new application...</h3>
+  </div>
+  <div class="modal-body">
+    <p>Available repositories:</p>
+
+	<div class="tabbable" data-bind="with: repos"> <!-- Only required for left/right tabs -->
+	  <ul class="nav nav-tabs" data-bind="foreach: organizations">
+	    <li data-bind="css: {'active': ($index()==0) }">
+	    	<a href="" data-toggle="tab" data-bind="attr: {href: '#tab' + $index()}">
+	    		<span data-bind="text: name"><span>
+	    	</a>
+	    </li>
+	  </ul>
+	  <div class="tab-content"  data-bind="foreach: organizations">
+	    <div class="tab-pane" id="" data-bind="attr: {id: 'tab' + $index()}">
+	      <div class="btn-group" data-toggle="buttons-radio"  data-bind="foreach: $data.repos">
+	      	<button type="button" class="btn"><span data-bind="text: name"></span></button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+  </div> <!-- modal-body -->
+
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    <button class="btn btn-primary">Create</button>
+  </div>
+</div>	
+
 </body>
 </html>

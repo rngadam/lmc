@@ -27,24 +27,39 @@
 console.log('mc loading');
 
 var AppsListModel = function () {
-    this.itemToAdd = ko.observable("");
-    this.allItems = ko.observableArray(["LED demo", "PWM motor driver", "ADC acquisition", "Interactive GPIO"]); // Initial items
-    this.selectedItems = ko.observableArray(["LED demo"]);                                // Initial selection
+    // this.itemToAdd = ko.observable("");
+    this.allItems = ko.observableArray([
+        { name: "LED demo", icon: "/icons/nodejs.svg", url: "#run-app" },
+        { name: "PWM motor driver", icon: "/icons/nodejs.svg", url: "#run-app" },
+        { name: "ADC acquisition", icon: "/icons/nodejs.svg", url: "#run-app" },
+        { name: "Interactive GPIO", icon: "/icons/nodejs.svg", url: "#run-app" },
+        { name: "Bouncy ball", icon: "/icons/processing.svg", url: "#run-app" },
+    ]);
+    // this.selectedItems = ko.observableArray(["LED demo"]);                                // Initial selection
  
-    this.addItem = function () {
-        if ((this.itemToAdd() != "") && (this.allItems.indexOf(this.itemToAdd()) < 0)) // Prevent blanks and duplicates
-            this.allItems.push(this.itemToAdd());
-        this.itemToAdd(""); // Clear the text box
-    };
+    // this.addItem = function () {
+    //     if ((this.itemToAdd() != "") && (this.allItems.indexOf(this.itemToAdd()) < 0)) // Prevent blanks and duplicates
+    //         this.allItems.push(this.itemToAdd());
+    //     this.itemToAdd(""); // Clear the text box
+    // };
  
-    this.removeSelected = function () {
-        this.allItems.removeAll(this.selectedItems());
-        this.selectedItems([]); // Clear selection
-    };
+    // this.removeSelected = function () {
+    //     this.allItems.removeAll(this.selectedItems());
+    //     this.selectedItems([]); // Clear selection
+    // };
  
-    this.sortItems = function() {
-        this.allItems.sort();
-    };
+    // this.sortItems = function() {
+    //     this.allItems.sort();
+    // };
+};
+ 
+
+var ReposListModel = function () {
+    this.organizations = ko.observableArray([
+        { name: "rngadam", repos: [{name: 'example a'}, {name: 'example b'}]},
+        { name: "Lophilo", repos: [{name: 'example a'}, {name: 'example b'}]},
+        { name: "XinCheJian", repos: [{name: 'example a'}, {name: 'example b'}]},
+    ]);
 };
  
 
@@ -68,7 +83,8 @@ ss.rpc('system.versions', function(res) {
 	model = {
 		'versions': versionsModel,
 		'apps': new AppsListModel(),
-		'stats': new StatsModel()
+		'stats': new StatsModel(),
+        'repos': new ReposListModel()
 	};
 	ko.applyBindings(model);
 });
