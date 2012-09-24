@@ -41,15 +41,12 @@ everyauth.github
     session.oauth = accessToken;
     session.userId = githubUserMetadata.login;
     session.save();
-    return true;
+    return session.userId;
   })
   .redirectPath('/');
 
-exports.configureEveryAuth = function(ss) {
-  ss.http.middleware.prepend(ss.http.connect.bodyParser());
-  ss.http.middleware.append(everyauth.middleware());
-}
-
+ss.http.middleware.prepend(ss.http.connect.bodyParser());
+ss.http.middleware.append(everyauth.middleware());
 
 // Define a single-page client called 'main'
 ss.client.define('main', {
@@ -105,6 +102,18 @@ ss.client.define('test', {
   tmpl: '*'
 });
 
+ss.client.define('authenticate', {
+  view: 'authenticate.html',
+  css: ['bootstrap'],
+  code: [ 
+    'libs/jquery.min.js', 
+    'libs/bootstrap.js', 
+    'libs/knockout-2.1.0.js', 
+    'authenticate'
+  ],
+  tmpl: '*'
+});
+
 ss.client.define('mc', {
   view: 'mc.html',
   css: ['bootstrap'],
@@ -119,7 +128,7 @@ ss.client.define('mc', {
 });
 
 // Serve this client on the root URL
-ss.http.route('/', function(req, res){
+ss.http.route('/', function(req, res) {
   res.serveClient('mc');
 });
 
@@ -151,8 +160,11 @@ ss.http.route('/test', function(req, res){
   res.serveClient('test');
 });
 
+ss.http.route('/authenticate', function(req, res){
+  res.serveClient('authenticate');
+});
+
 // Code Formatters
-console.dir(ss.client);
 ss.client.formatters.add(require('ss-stylus'));
 
 // Use server-side compiled Hogan (Mustache) templates. Others engines available

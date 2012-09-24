@@ -33,8 +33,31 @@
 			<li><a href="#system" data-placement="bottom" data-toggle="tab" rel="tooltip" title="This is the system tab with some versioning and status information">System</a></li>
 			<li><a href="#editing" data-toggle="tab" rel="tooltip" title="Existing apps and the ability to create new ones with Cloud9">Applications</a></li>
 			<li><a href="#settings" data-toggle="tab" rel="tooltip" title="General system settings (security, services, accounts)">Settings</a></li>	  
-			<li><a href="https://github.com/Lophilo/lophilo/wiki" target="new" rel="tooltip" title="System documentation">Help</a></li>	  
+			<li class="dropdown">
+			  <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+			  	Help
+			  </a>
+			  <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+			    <li>
+			    	<a tabindex="-1" href="https://github.com/Lophilo/lophilo/wiki" target="new">System documentation</a>
+			    </li>
+			  </ul> 			
+			</li>	  
+			<li class="dropdown">
+			  <a class="dropdown-toggle" data-toggle="dropdown" href="#" data-bind="with: user">
+			  	<b data-bind="text: username"></b>
+			  </a>
+			  <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+			    <li>
+			    	<a tabindex="-1" href="/auth/github">Login with github</a>
+			    </li>
+			    <li>
+			    	<a tabindex="-1" href="" data-bind="click: require('/mc.js').logout">Logout</a>
+			    </li>			    
+			  </ul> 		
+			</li>			
 	  		<li><a href="#system" rel="tooltip" title="Load average (1mn)"><span class="dynamicsparkline">Loading..</span></a></li>
+
 		</ul>
 	</div>		
 
@@ -70,7 +93,7 @@
 		    <div id="collapseTwo" class="accordion-body collapse">
 		      <div class="accordion-inner" data-bind="with: versions"> 
 		  		<p>Versions</p>
-		  		<ul data-bind="foreach: data">
+		  		<ul data-bind="foreach: items">
 			  		<li><span data-bind="text: name"></span>: <span data-bind="text: version"></span>
 			  	</ul>
 		      </div>
@@ -82,7 +105,7 @@
 
 	  <div class="tab-pane fade" id="editing"  data-bind="with: apps">
 	  	<div class="well">Editing and creating Lophilo applications</div>	  	
-			<ul class="thumbnails" data-bind="foreach: allItems">
+			<ul class="thumbnails" data-bind="foreach: items">
 
 				<div  data-bind="if: $index() == 0">
 				<li class="span2">
@@ -104,8 +127,16 @@
 					 	<center>
 					 		<span data-bind="text: name"></span>
 					 		<p>
-					 		<a class="btn btn-small" href="#"><i class="icon-pencil">E</i></a>
-					 		<a class="btn btn-small" href="#"><i class="icon-trash">X</i></a>
+					 		<!--
+					 		<a class="btn btn-small" href="#">
+					 			<i class="icon-pencil">E</i>
+					 		</a>
+					 		<a class="btn btn-small" href="#">
+					 			<i class="icon-trash">X</i>
+					 		</a>
+					 		-->
+					 		<a class="btn btn-small" href="#">E</a>
+					 		<a class="btn btn-small" href="#">X</a>
 					 		</p>
 					 	</center>					  
 					</div>
@@ -174,30 +205,35 @@
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
     <h3 id="myModalLabel">Adding new application...</h3>
   </div>
-  <div class="modal-body">
+  <div class="modal-body" data-bind="with: repos">
     <p>Available repositories:</p>
-
-	<div class="tabbable" data-bind="with: repos"> <!-- Only required for left/right tabs -->
-	  <ul class="nav nav-tabs" data-bind="foreach: organizations">
+	<div class="btn-group btn-group-vertical" data-toggle="buttons-radio"  data-bind="foreach: items">
+		<button type="button" class="btn" data-bind="click: $parent.selectItem">
+			<span data-bind="text: name"></span>
+		</button>
+	</div>
+	<!--
+	<div class="tabbable">
+	  <ul class="nav nav-tabs" data-bind="foreach: repos">
 	    <li data-bind="css: {'active': ($index()==0) }">
 	    	<a href="" data-toggle="tab" data-bind="attr: {href: '#tab' + $index()}">
 	    		<span data-bind="text: name"><span>
 	    	</a>
 	    </li>
 	  </ul>
-	  <div class="tab-content"  data-bind="foreach: organizations">
+	  <div class="tab-content"  data-bind="foreach: repos">
 	    <div class="tab-pane" id="" data-bind="attr: {id: 'tab' + $index()}">
 	      <div class="btn-group" data-toggle="buttons-radio"  data-bind="foreach: $data.repos">
 	      	<button type="button" class="btn"><span data-bind="text: name"></span></button>
 	      </div>
 	    </div>
 	  </div>
-	</div>
+	</div> -->
   </div> <!-- modal-body -->
 
   <div class="modal-footer">
     <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-    <button class="btn btn-primary">Create</button>
+    <button class="btn btn-primary" data-bind="click: require('/mc.js').checkoutRepository">Checkout</button>
   </div>
 </div>	
 

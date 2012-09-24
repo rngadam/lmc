@@ -16,6 +16,7 @@
     "github": "~0.1.5",
     "connect-redis": "~1.4.4",
     "authenticate-pam": "~0.1.0",
-    "assert": "~0.4.9"
+    "assert": "~0.4.9",
+    "redis": "~0.8.1"
   }
 }

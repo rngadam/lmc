@@ -12,7 +12,19 @@ var ReposListModel = function () {
     ]);
 };
  
+
 var model = {
 	'repos': new ReposListModel()
 };
  ko.applyBindings(model);
+
+function hello() {alert('hello');}
+
+ss.rpc('auth.authenticate', 'lophilo', 'lophilo1', function(res) {
+	console.log(arguments);
+	if(res) {
+		console.log('authenticated!');
+	} else {
+		console.log('not authenticated!');
+	}		
+});

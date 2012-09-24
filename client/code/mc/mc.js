@@ -26,42 +26,22 @@
 
 console.log('mc loading');
 
+exports.checkoutRepository  = function() {
+    console.log(model.repos.selectedItem());
+}
+
+exports.logout = function() {
+    console.log('logging out');
+    ss.rpc('auth.logout', function(res) {
+        console.log('logged out');
+        model.user.username("not logged in");
+    });
+}
+
 var AppsListModel = function () {
     // this.itemToAdd = ko.observable("");
-    this.allItems = ko.observableArray([
-        { name: "LED demo", icon: "/icons/nodejs.svg", url: "#run-app" },
-        { name: "PWM motor driver", icon: "/icons/nodejs.svg", url: "#run-app" },
-        { name: "ADC acquisition", icon: "/icons/nodejs.svg", url: "#run-app" },
-        { name: "Interactive GPIO", icon: "/icons/nodejs.svg", url: "#run-app" },
-        { name: "Bouncy ball", icon: "/icons/processing.svg", url: "#run-app" },
-    ]);
-    // this.selectedItems = ko.observableArray(["LED demo"]);                                // Initial selection
- 
-    // this.addItem = function () {
-    //     if ((this.itemToAdd() != "") && (this.allItems.indexOf(this.itemToAdd()) < 0)) // Prevent blanks and duplicates
-    //         this.allItems.push(this.itemToAdd());
-    //     this.itemToAdd(""); // Clear the text box
-    // };
- 
-    // this.removeSelected = function () {
-    //     this.allItems.removeAll(this.selectedItems());
-    //     this.selectedItems([]); // Clear selection
-    // };
- 
-    // this.sortItems = function() {
-    //     this.allItems.sort();
-    // };
+    this.items = ko.observableArray();
 };
- 
-
-var ReposListModel = function () {
-    this.organizations = ko.observableArray([
-        { name: "rngadam", repos: [{name: 'example a'}, {name: 'example b'}]},
-        { name: "Lophilo", repos: [{name: 'example a'}, {name: 'example b'}]},
-        { name: "XinCheJian", repos: [{name: 'example a'}, {name: 'example b'}]},
-    ]);
-};
- 
 
 var StatsModel = function() {
 	this.process = ko.observable();
@@ -74,37 +54,81 @@ var StatsModel = function() {
 	}, this)
 };
 
-var versionsModel;
-var model;
+var VersionsModel = function() {
+    this.items = ko.observableArray();
+};
 
-ss.rpc('system.versions', function(res) {
+var UserModel = function() {
+    this.username = ko.observable("not logged in");
+};
+
+var ReposModel = function() {
+    var self = this;
+    self.items = ko.observableArray();
+    self.selectedItem = ko.observable();  
+    self.selectItem = function(item) {
+        console.log('selecting ' + item);
+        self.selectedItem(item);
+    }
+};
+
+var model = {
+    'versions': new VersionsModel(),
+    'apps': new AppsListModel(),
+    'stats': new StatsModel(),
+    'repos': new ReposModel(),
+    'user': new UserModel()
+};
+
+ss.rpc('system.versions', function(versions) {
 	console.log("versions received");
-	versionsModel = ko.mapping.fromJS(res);
-	model = {
-		'versions': versionsModel,
-		'apps': new AppsListModel(),
-		'stats': new StatsModel(),
-        'repos': new ReposListModel()
-	};
-	ko.applyBindings(model);
+    model.versions.items(versions);
 });
 
+ss.rpc('app.list', function(apps) {
+    console.log("application list received");
+    model.apps.items(apps);
+});
+
+
+ss.rpc('github.repositories', function(repos) {
+    console.log("repositories received");   
+    if(!repos) {
+        console.log('error retrieving repos (not authenticated?)');
+    } else {
+        model.repos.items(repos);    
+    }
+    
+});
+
+    
+ss.rpc('auth.current', function(username) {
+    console.log('current user ' + username);
+    if(username == null) {
+        username = "not logged in";
+    }
+    model.user.username(username);
+}); 
+
+ko.applyBindings(model);    
+
 var myvalues = [];
-//var myvalues = [10,8,5,7,4,4,1];
-//$('.dynamicsparkline').sparkline(myvalues);
 
 function update() {
-  ss.rpc('system.loadavg', function(res) {
+    console.log('fetch data update');
+    ss.rpc('system.loadavg', function(res) {
     myvalues.push(res.one);
     if(myvalues.length > 10)
       myvalues.shift();
     $('.dynamicsparkline').sparkline(myvalues);
-  });
-  ss.rpc('system.uptime', function(res) {
-  	model.stats.process(res.process);
-  	model.stats.system(res.system);
-  });  
+    });
+    ss.rpc('system.uptime', function(res) {
+    	model.stats.process(res.process);
+    	model.stats.system(res.system);
+    });    
 }
-setInterval(update, 1000);
+clearInterval(update);
+setInterval(update, 5000);
+
 
 console.log('mc loaded');

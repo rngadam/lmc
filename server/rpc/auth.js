@@ -26,9 +26,14 @@ exports.actions = function(req, res, ss){
   req.use('session');
 
   return {
+    current: function() {
+      res(req.session.userId);
+    },
     authenticate: function(username, password){
+      console.log(arguments);
       var pam = require('authenticate-pam');
-      pam.authenticate(username, password, function(err) {
+      pam.authenticate(username, password, function(err, user) {
+          console.log(arguments);
           if(err) {
             console.log(err);
           }
@@ -41,11 +46,12 @@ exports.actions = function(req, res, ss){
               res('Access denied!');
             }
           }
-      });      
+      }, {serviceName: 'lmc', remoteHost: 'localhost'});      
     },
 
     logout: function(){
       req.session.setUserId(null);
+      res(true);
     }
   }
 }
