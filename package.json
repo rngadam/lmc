@@ -17,6 +17,9 @@
     "connect-redis": "~1.4.4",
     "authenticate-pam": "~0.1.0",
     "assert": "~0.4.9",
-    "redis": "~0.8.1"
+    "redis": "~0.8.1",
+    "q": "~0.8.8",
+    "mkdirp": "~0.3.4",
+    "q-fs": "~0.1.32"
   }
 }

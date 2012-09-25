@@ -207,11 +207,15 @@
   </div>
   <div class="modal-body" data-bind="with: repos">
     <p>Available repositories:</p>
+    <select data-bind="options: items, optionsText: 'full_name', value: selectedItem", optionsCaption: 'Select repository to checkout...'>
+    </select>
+    <!--
 	<div class="btn-group btn-group-vertical" data-toggle="buttons-radio"  data-bind="foreach: items">
 		<button type="button" class="btn" data-bind="click: $parent.selectItem">
 			<span data-bind="text: name"></span>
 		</button>
 	</div>
+	-->
 	<!--
 	<div class="tabbable">
 	  <ul class="nav nav-tabs" data-bind="foreach: repos">

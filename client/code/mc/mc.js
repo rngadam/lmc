@@ -27,7 +27,7 @@
 console.log('mc loading');
 
 exports.checkoutRepository  = function() {
-    console.log(model.repos.selectedItem());
+    console.log('checking out ' + model.repos.selectedItem().full_name);
 }
 
 exports.logout = function() {
@@ -85,7 +85,7 @@ ss.rpc('system.versions', function(versions) {
     model.versions.items(versions);
 });
 
-ss.rpc('app.list', function(apps) {
+ss.rpc('apps.list', function(apps) {
     console.log("application list received");
     model.apps.items(apps);
 });
@@ -115,7 +115,6 @@ ko.applyBindings(model);
 var myvalues = [];
 
 function update() {
-    console.log('fetch data update');
     ss.rpc('system.loadavg', function(res) {
     myvalues.push(res.one);
     if(myvalues.length > 10)
