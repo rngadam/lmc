@@ -38,8 +38,8 @@ function checkout(repoUrl, username, cb) {
 		.then(
 			function(key) {
 				return gitmanager.cloneGitPromise(
-					repoUrl, config.getHomeDirectory(username), key);
-			}			
+					repoUrl, config.getCheckoutName(repoUrl, username), key);
+			}
 		).then(
 			function() {
 				cb(null, true);
@@ -47,7 +47,7 @@ function checkout(repoUrl, username, cb) {
 		).fail(
 			function(err) {
 				cb(err);
-			}		
+			}
 		);
 }
 
@@ -60,8 +60,11 @@ exports.actions = function(req, res, ss){
 		// using the ssh key
 		checkout: function(repoUrl) {
 			checkout(repoUrl, req.session.userId, function(err) {
-				if(err) res('Error: could not checkout repository: ' + err.stack);
-				else res('Repository has been checked out ' + repoUrl);
+				if(err) {
+					res('Error: could not checkout repository: ' + err.stack);
+				} else {
+					res('Repository has been checked out ' + repoUrl);
+				}
 			});
 		},
 		// returns pubkey value (creates it if not available)

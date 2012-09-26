@@ -27,7 +27,11 @@ exports.actions = function(req, res, ss){
 
   return {
     current: function() {
-      res(req.session.userId);
+      var username = req.session.userId
+      if(!req.session.userId) {
+        username = "not logged in";
+      }
+      res(username);
     },
     authenticate: function(username, password){
       console.log(arguments);

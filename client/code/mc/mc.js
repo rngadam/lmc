@@ -28,6 +28,8 @@ console.log('mc loading');
 
 exports.checkoutRepository  = function() {
     console.log('checking out ' + model.repos.selectedItem().full_name);
+    console.log('using sshurl ' + model.repos.selectedItem().ssh_url);
+    ss.rpc('git.checkout', model.repos.selectedItem().ssh_url);
 }
 
 exports.logout = function() {
