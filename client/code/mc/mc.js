@@ -52,6 +52,14 @@ exports.edit = function(app) {
     });
 }
 
+exports.run = function(app) {
+    console.log('running app ' + app);
+    ss.rpc('apps.run', app.name, function(url) {
+        console.log(url);
+        window.open(url);
+    });
+}
+
 exports.rm = function(app) {
     console.log('deleting app');
     ss.rpc('apps.rm', app.name, function(res) {

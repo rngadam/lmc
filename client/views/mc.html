@@ -40,6 +40,8 @@
 			  <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
 			    <li>
 			    	<a tabindex="-1" href="https://github.com/Lophilo/lophilo/wiki" target="new">System documentation</a>
+			    	<a tabindex="-1" href="https://github.com/Lophilo/lophilo/issues/new" target="new">Report bug</a>			    	
+			    	<a tabindex="-1" href="#">About</a>    	
 			    </li>
 			  </ul> 			
 			</li>	  
@@ -120,7 +122,7 @@
 				<!-- ko foreach: items -->
 				<li class="span2">
 					<div class="thumbnail">
-					  	<a href="" data-bind="attr: {href: url}" role="button" class="btn" data-toggle="modal">
+					  	<a href="" data-bind="click: require('/mc.js').run" role="button" class="btn" data-toggle="modal">
 					  		<img data-bind="attr: {src: icon}" alt="test" width=128 height=128>
 					  	</a>
 					 	<center>
@@ -209,37 +211,26 @@
     <p>Available repositories:</p>
     <select data-bind="options: items, optionsText: 'full_name', value: selectedItem", optionsCaption: 'Select repository to checkout...'>
     </select>
-    <!--
-	<div class="btn-group btn-group-vertical" data-toggle="buttons-radio"  data-bind="foreach: items">
-		<button type="button" class="btn" data-bind="click: $parent.selectItem">
-			<span data-bind="text: name"></span>
-		</button>
-	</div>
-	-->
-	<!--
-	<div class="tabbable">
-	  <ul class="nav nav-tabs" data-bind="foreach: repos">
-	    <li data-bind="css: {'active': ($index()==0) }">
-	    	<a href="" data-toggle="tab" data-bind="attr: {href: '#tab' + $index()}">
-	    		<span data-bind="text: name"><span>
-	    	</a>
-	    </li>
-	  </ul>
-	  <div class="tab-content"  data-bind="foreach: repos">
-	    <div class="tab-pane" id="" data-bind="attr: {id: 'tab' + $index()}">
-	      <div class="btn-group" data-toggle="buttons-radio"  data-bind="foreach: $data.repos">
-	      	<button type="button" class="btn"><span data-bind="text: name"></span></button>
-	      </div>
-	    </div>
-	  </div>
-	</div> -->
   </div> <!-- modal-body -->
 
   <div class="modal-footer">
     <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
     <button class="btn btn-primary" data-bind="click: require('/mc.js').checkoutRepository" data-dismiss="modal">Checkout</button>
-  </div>
+  </div>  
 </div>	
 
+<div class="modal hide" id="about" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+    <h3 id="myModalLabel">About</h3>
+  </div>
+  <div class="modal-body">
+  	Ricky Ng-Adam, Lophilo (2012)
+  </div> <!-- modal-body -->
+
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+  </div>  
+</div>	
 </body>
 </html>

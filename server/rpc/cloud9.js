@@ -22,8 +22,9 @@
  *
  */
 var child_process = require('child_process');
-var http = require('http');
+
 var assert = require('assert');
+var testurl = require('testurl');
 var config = require('./config.js');
 
 function startCloud9(directory) {
@@ -44,36 +45,6 @@ function startCloud9(directory) {
   return {instance: cloud9, url: "http://localhost:3131"};
 }
 
-
-function testUrlAvailability(url, count, cb) {
-  assert(url); assert(count>=0); assert(cb);
-  var request = http.get(url, function(res) {
-    if(res.statusCode != 200) {
-      console.log("result " + res.statusCode);
-      if(count++>=5) {
-        next('timeout waiting for cloud9 to respond');
-        if(cloud9) {
-          cloud9.kill();
-        }        
-      } else {
-        setTimeout(testUrlAvailability.bind(null, url, count, cb), 1000);
-      }
-    } else {
-      console.log("url responding!");
-      cb();      
-    }
-  });
-
-  request.on('error', function(err) {
-    console.log('error caught: ' + err);
-    if(count++ > 5) {
-      cb('timeout waiting for cloud9 to respond');
-    } else {
-      setTimeout(testUrlAvailability.bind(null, url, count, cb), 1000);
-    }
-  });
-}
-
 exports.actions = function(req, res, ss){
   req.use('session');
   req.use('debug');
@@ -81,14 +52,14 @@ exports.actions = function(req, res, ss){
   return {
     edit: function(repoUrl) {
       var data = startCloud9(config.getCheckoutName(repoUrl, req.session.userId));
-      testUrlAvailability(data.url, 0, function(err) {
+      testurl.testUrlAvailability(data.url, 0, function(err) {
         if(err) {
           res('error waiting for cloud9 to come up');
           data.instance.kill();
         } else {
           res(data.url);
         }
-      })
+      });
     }
   }
 }
