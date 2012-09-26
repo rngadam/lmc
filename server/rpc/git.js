@@ -26,28 +26,19 @@
 var path = require('path');
 var sshkeys = require('sshkeys');
 var gitmanager = require('gitmanager');
+var config = require('./config.js');
 
-var BASE_DIR = '/home/rngadam/lophilo/lmc';
-var USERS_DIR = path.join(BASE_DIR, 'users');
-
-function getHomeDirectory(username) {
-	return path.join(USERS_DIR, username);
-}
-
-function getSshDirectory(username) {
-	return path.join(getHomeDirectory(), '.ssh');
-}
 
 function streamBuffer(data) {
 	console.log('LOG: ' + data);
 }
 
 function checkout(repoUrl, username, cb) {
-	sshkeys.getPublicKeyPromise(getSshDirectory(username), username, 'github')
+	sshkeys.getPublicKeyPromise(config.getSshDirectory(username), username, 'github')
 		.then(
 			function(key) {
 				return gitmanager.cloneGitPromise(
-					repoUrl, getHomeDirectory(username), key);
+					repoUrl, config.getHomeDirectory(username), key);
 			}			
 		).then(
 			function() {
@@ -75,7 +66,7 @@ exports.actions = function(req, res, ss){
 		},
 		// returns pubkey value (creates it if not available)
 		pubkey: function() {
-		  sshkeys.getPublicKey(getSshDirectory(req.session.userId), req.session.userId, 'github', function(err, key) {
+		  sshkeys.getPublicKey(config.getSshDirectory(req.session.userId), req.session.userId, 'github', function(err, key) {
 		  	if(err) {
 		  		// publish error err
 		  		res(null);
