@@ -29,7 +29,10 @@ console.log('mc loading');
 exports.checkoutRepository  = function() {
     console.log('checking out ' + model.repos.selectedItem().full_name);
     console.log('using sshurl ' + model.repos.selectedItem().ssh_url);
-    ss.rpc('git.checkout', model.repos.selectedItem().ssh_url);
+    ss.rpc('git.checkout', model.repos.selectedItem().ssh_url, function() {
+        console.log('checkout completed');
+        refreshApps();
+    });
 }
 
 exports.logout = function() {
@@ -37,6 +40,23 @@ exports.logout = function() {
     ss.rpc('auth.logout', function(res) {
         console.log('logged out');
         model.user.username("not logged in");
+    });
+}
+
+
+exports.edit = function(app) {
+    console.log('editing doc');
+    ss.rpc('cloud9.edit', app.name, function(url) {
+        console.log(url);
+        window.open(url);
+    });
+}
+
+exports.rm = function(app) {
+    console.log('deleting app');
+    ss.rpc('apps.rm', app.name, function(res) {
+        console.log(res);
+        refreshApps();
     });
 }
 
@@ -82,27 +102,36 @@ var model = {
     'user': new UserModel()
 };
 
-ss.rpc('system.versions', function(versions) {
-	console.log("versions received");
-    model.versions.items(versions);
-});
+function refreshSystemVersions() {
+    ss.rpc('system.versions', function(versions) {
+        console.log("versions received");
+        model.versions.items(versions);
+    });
+}
 
-ss.rpc('apps.list', function(apps) {
-    console.log("application list received");
-    model.apps.items(apps);
-});
+function refreshApps() {
+    ss.rpc('apps.list', function(apps) {
+        console.log("application list received");
+        model.apps.items(apps);
+    });    
+}
 
 
-ss.rpc('github.repositories', function(repos) {
-    console.log("repositories received");   
-    if(!repos) {
-        console.log('error retrieving repos (not authenticated?)');
-    } else {
-        model.repos.items(repos);    
-    }
-    
-});
+function refreshRepos() {
+    ss.rpc('github.repositories', function(repos) {
+        console.log("repositories received");   
+        if(!repos) {
+            console.log('error retrieving repos (not authenticated?)');
+        } else {
+            model.repos.items(repos);    
+        }
+        
+    });    
+}
 
+refreshSystemVersions();
+refreshApps();
+refreshRepos();
     
 ss.rpc('auth.current', function(username) {
     console.log('current user ' + username);
@@ -128,6 +157,7 @@ function update() {
     	model.stats.system(res.system);
     });    
 }
+
 clearInterval(update);
 setInterval(update, 5000);
 

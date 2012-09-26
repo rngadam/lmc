@@ -37,8 +37,15 @@ function getSshDirectory(username) {
 }
 
  function getCheckoutName(repoUrl, username) {
-  var checkoutName = repoUrl.slice(repoUrl.lastIndexOf('/')+1);	
-  return path.join(getHomeDirectory(username), checkoutName)	
+    var index = repoUrl.lastIndexOf('/');
+    var checkoutName;
+    if(index>0) {
+       checkoutName = repoUrl.slice(index+1); 
+    } else {
+        checkoutName = repoUrl;
+    }
+	
+    return path.join(getHomeDirectory(username), checkoutName)	
 }
 
 exports.getHomeDirectory = getHomeDirectory;
