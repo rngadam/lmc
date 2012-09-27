@@ -42,7 +42,7 @@ function startCloud9(directory) {
     console.log('cloud9 exited');
   });
 
-  return {instance: cloud9, url: "http://localhost:3131"};
+  return {instance: cloud9, url: "http://lophilo.local:3131"};
 }
 
 exports.actions = function(req, res, ss){

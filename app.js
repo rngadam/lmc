@@ -31,11 +31,33 @@ var GITHUB_CLIENT_SECRET = '8deb9798993c0a1a937e6fb90416b287867cbb48';
 var COOKIE_SECRET = 'My kitten is a bit crazy'; // generate and read from disk
 var SESSION_SECRET = 'His name is Chewie';
 
+var configs = [
+  {
+    host: 'local.host',
+    port: 3000,
+    clientId: '8b19f4a1ceb92a50819b',
+    clientSecret: '8deb9798993c0a1a937e6fb90416b287867cbb48',
+    entryPath: '/auth/github',
+    callbackPath: '/auth/github/callback' 
+  },
+  {
+    host: 'lophilo.local',
+    port: 80,
+    internalPort: 8080,
+    clientId: '53daae98ae370d2dfdb5',
+    clientSecret: '638354c0def5f4339be0cf32bf7fd9526389228c',
+    entryPath: '/auth/github',
+    callbackPath: '/auth/github/callback' 
+  },  
+];
+
+var config = configs[1];
+
 everyauth.github
-  .appId(GITHUB_CLIENT_ID)
-  .appSecret(GITHUB_CLIENT_SECRET)
-  .entryPath('/auth/github')
-  .callbackPath('/auth/github/callback')
+  .appId(config.clientId)
+  .appSecret(config.clientSecret)
+  .entryPath(config.entryPath)
+  .callbackPath(config.callbackPath)
   .scope('repo')
   .findOrCreateUser( function (session, accessToken, accessTokenExtra, githubUserMetadata) {
     session.oauth = accessToken;
@@ -178,13 +200,13 @@ if (ss.env === 'production') ss.client.packAssets();
 
 // Start web server
 var server = http.Server(ss.http.middleware);
-server.listen(3000);
+server.listen(config.internalPort, config.host);
 
 // Start Console Server (REPL)
 // To install client: sudo npm install -g ss-console
 // To connect: ss-console <optional_host_or_port>
 var consoleServer = require('ss-console')(ss);
-consoleServer.listen(5000);
+consoleServer.listen(config.internalPort + 1);
 
 // Start SocketStream
 ss.start(server);

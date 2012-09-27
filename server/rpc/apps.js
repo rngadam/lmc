@@ -5,10 +5,12 @@ var testurl = require('testurl');
 var child_process = require('child_process');
 
 function run(directory) {
-  console.log('Running ' + directory);
   var app = path.join(directory, 'app.js');  
-  var appInstance = child_process.spawn('/usr/bin/nodejs', [app]);
-  return {instance: appInstance, url: 'http://localhost:9999'};
+  console.log('Running ' + app);
+  var appInstance = child_process.spawn('/usr/bin/nodejs', [app], {
+    cwd: directory
+  });
+  return {instance: appInstance, url: 'http://lophilo.local:8888'};
 }
 
 
@@ -58,7 +60,7 @@ exports.actions = function(req, res, ss) {
         if(err) {
           res('error waiting for app to come up');
         } else {
-          res(data.url);
+          res(null, data.url);
         }
       });
     }      
