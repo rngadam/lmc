@@ -1,0 +1,6 @@
+{
+  "view": "app.html",
+  "css":  ["app.styl"],
+  "code": ["libs/jquery.min.js", "app"],
+  "tmpl": "*"
+}

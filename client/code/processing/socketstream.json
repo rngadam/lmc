@@ -1,0 +1,5 @@
+{
+  "view": "processing.html",
+  "code": ["libs/jquery.min.js", "libs/processing-1.4.1.js",  "processing"],
+  "tmpl": "*"
+}

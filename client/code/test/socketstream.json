@@ -1,0 +1,6 @@
+{
+  "view": "test.html",
+  "css": ["bootstrap"],
+  "code": [ "libs/jquery.min.js", "libs/bootstrap.js", "libs/knockout-2.1.0.js", "test"],
+  "tmpl": "*"
+}

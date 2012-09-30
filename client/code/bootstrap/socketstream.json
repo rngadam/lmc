@@ -1,0 +1,6 @@
+{
+  "view": "bootstrap.html",
+  "css": ["bootstrap"],
+  "code": [ "libs/jquery.min.js", "libs/bootstrap.js", "bootstrap"],
+  "tmpl": "*"
+}

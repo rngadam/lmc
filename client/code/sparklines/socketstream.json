@@ -1,0 +1,5 @@
+{
+  "view": "sparklines.html",
+  "code": [ "libs/jquery.min.js", "libs/jquery.sparkline.min.js","sparklines"],
+  "tmpl": "*"
+}

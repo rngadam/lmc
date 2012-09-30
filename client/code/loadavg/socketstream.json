@@ -1,0 +1,6 @@
+{
+  "view": "loadavg.html",
+  "css":  ["jgauge"],
+  "code": ["libs/jquery.min.js", "libs/jgauge-0.3.0.a3.min.js", "libs/jQueryRotate.min.js", "loadavg"],
+  "tmpl": "*"
+}

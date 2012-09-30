@@ -25,6 +25,7 @@ var http = require('http');
 var ss = require('socketstream');
 var everyauth = require('everyauth');
 var assert = require('assert');
+var localconfigs = require('ss-localconfigs');
 
 var GITHUB_CLIENT_ID = '8b19f4a1ceb92a50819b';
 var GITHUB_CLIENT_SECRET = '8deb9798993c0a1a937e6fb90416b287867cbb48';
@@ -70,121 +71,7 @@ everyauth.github
 ss.http.middleware.prepend(ss.http.connect.bodyParser());
 ss.http.middleware.append(everyauth.middleware());
 
-// Define a single-page client called 'main'
-ss.client.define('main', {
-  view: 'app.html',
-  css:  ['app.styl'],
-  code: ['libs/jquery.min.js', 'app'],
-  tmpl: '*'
-});
-
-ss.client.define('loadavg', {
-  view: 'loadavg.html',
-  css:  ['jgauge'],
-  code: ['libs/jquery.min.js', 'libs/jgauge-0.3.0.a3.min.js', 'libs/jQueryRotate.min.js', 'loadavg'],
-  tmpl: '*'
-});
-
-ss.client.define('processing', {
-  view: 'processing.html',
-  code: ['libs/jquery.min.js', 'libs/processing-1.4.1.js',  'processing'],
-  tmpl: '*'
-});
-
-// the order matters: jquery has to come first
-ss.client.define('sparklines', {
-  view: 'sparklines.html',
-  code: [ 'libs/jquery.min.js', 'libs/jquery.sparkline.min.js','sparklines'],
-  tmpl: '*'
-});
-
-ss.client.define('webgl', {
-  view: 'webgl.html',
-  code: [ 'libs/jquery.min.js', 'webgl'],
-  tmpl: '*'
-});
-
-ss.client.define('knockout', {
-  view: 'knockout.html',
-  code: [ 'libs/jquery.min.js', 'libs/knockout-2.1.0.js', 'knockout'],
-  tmpl: '*'
-});
-
-ss.client.define('bootstrap', {
-  view: 'bootstrap.html',
-  css: ['bootstrap'],
-  code: [ 'libs/jquery.min.js', 'libs/bootstrap.js', 'bootstrap'],
-  tmpl: '*'
-});
-
-ss.client.define('test', {
-  view: 'test.html',
-  css: ['bootstrap'],
-  code: [ 'libs/jquery.min.js', 'libs/bootstrap.js', 'libs/knockout-2.1.0.js', 'test'],
-  tmpl: '*'
-});
-
-ss.client.define('authenticate', {
-  view: 'authenticate.html',
-  css: ['bootstrap'],
-  code: [ 
-    'libs/jquery.min.js', 
-    'libs/bootstrap.js', 
-    'libs/knockout-2.1.0.js', 
-    'authenticate'
-  ],
-  tmpl: '*'
-});
-
-ss.client.define('mc', {
-  view: 'mc.html',
-  css: ['bootstrap'],
-  code: [ 
-    'libs/jquery.min.js', 
-    'libs/knockout-2.1.0.js', 
-    'libs/bootstrap.js', 
-    'libs/jquery.sparkline.min.js', 
-    'libs/knockout.mapping-latest.js', 
-    'mc'],
-  tmpl: '*'
-});
-
-// Serve this client on the root URL
-ss.http.route('/', function(req, res) {
-  res.serveClient('mc');
-});
-
-ss.http.route('/loadavg', function(req, res){
-  res.serveClient('loadavg');
-});
-
-ss.http.route('/sparklines', function(req, res){
-  res.serveClient('sparklines');
-});
-
-ss.http.route('/processing', function(req, res){
-  res.serveClient('processing');
-});
-
-ss.http.route('/webgl', function(req, res){
-  res.serveClient('webgl');
-});
-
-ss.http.route('/knockout', function(req, res){
-  res.serveClient('knockout');
-});
-
-ss.http.route('/bootstrap', function(req, res){
-  res.serveClient('bootstrap');
-});
-
-ss.http.route('/test', function(req, res){
-  res.serveClient('test');
-});
-
-ss.http.route('/authenticate', function(req, res){
-  res.serveClient('authenticate');
-});
+localconfigs.applyConfigs(ss, './client/code', 'socketstream.json');
 
 // Code Formatters
 ss.client.formatters.add(require('ss-stylus'));

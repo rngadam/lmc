@@ -1,0 +1,5 @@
+{
+  "view": "webgl.html",
+  "code": [ "libs/jquery.min.js", "webgl"],
+  "tmpl": "*"
+}

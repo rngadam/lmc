@@ -1,0 +1,5 @@
+{
+  "view": "knockout.html",
+  "code": [ "libs/jquery.min.js", "libs/knockout-2.1.0.js", "knockout"],
+  "tmpl": "*"
+}
