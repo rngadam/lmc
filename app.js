@@ -52,13 +52,13 @@ var configs = [
   },  
 ];
 
-var config = configs[1];
+var currentConfig = configs[1];
 
 everyauth.github
-  .appId(config.clientId)
-  .appSecret(config.clientSecret)
-  .entryPath(config.entryPath)
-  .callbackPath(config.callbackPath)
+  .appId(currentConfig.clientId)
+  .appSecret(currentConfig.clientSecret)
+  .entryPath(currentConfig.entryPath)
+  .callbackPath(currentConfig.callbackPath)
   .scope('repo')
   .findOrCreateUser( function (session, accessToken, accessTokenExtra, githubUserMetadata) {
     session.oauth = accessToken;
@@ -71,7 +71,7 @@ everyauth.github
 ss.http.middleware.prepend(ss.http.connect.bodyParser());
 ss.http.middleware.append(everyauth.middleware());
 
-localconfigs.applyConfigs(ss, './client/code', 'socketstream.json');
+localconfigs.applyConfigs(ss, './client/code', '.socketstream.json');
 
 // Code Formatters
 ss.client.formatters.add(require('ss-stylus'));
@@ -87,13 +87,13 @@ if (ss.env === 'production') ss.client.packAssets();
 
 // Start web server
 var server = http.Server(ss.http.middleware);
-server.listen(config.internalPort, config.host);
+server.listen(currentConfig.internalPort, currentConfig.host);
 
 // Start Console Server (REPL)
 // To install client: sudo npm install -g ss-console
 // To connect: ss-console <optional_host_or_port>
 var consoleServer = require('ss-console')(ss);
-consoleServer.listen(config.internalPort + 1);
+consoleServer.listen(currentConfig.internalPort + 1);
 
 // Start SocketStream
 ss.start(server);
