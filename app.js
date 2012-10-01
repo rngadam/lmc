@@ -26,33 +26,19 @@ var ss = require('socketstream');
 var everyauth = require('everyauth');
 var assert = require('assert');
 var localconfigs = require('ss-localconfigs');
+var fs = require('fs');
 
-var GITHUB_CLIENT_ID = '8b19f4a1ceb92a50819b';
-var GITHUB_CLIENT_SECRET = '8deb9798993c0a1a937e6fb90416b287867cbb48';
-var COOKIE_SECRET = 'My kitten is a bit crazy'; // generate and read from disk
-var SESSION_SECRET = 'His name is Chewie';
-
-var configs = [
-  {
-    host: 'local.host',
-    port: 3000,
-    clientId: '8b19f4a1ceb92a50819b',
-    clientSecret: '8deb9798993c0a1a937e6fb90416b287867cbb48',
-    entryPath: '/auth/github',
-    callbackPath: '/auth/github/callback' 
-  },
-  {
-    host: 'lophilo.local',
-    port: 80,
-    internalPort: 8080,
-    clientId: '53daae98ae370d2dfdb5',
-    clientSecret: '638354c0def5f4339be0cf32bf7fd9526389228c',
-    entryPath: '/auth/github',
-    callbackPath: '/auth/github/callback' 
-  },  
-];
-
-var currentConfig = configs[1];
+// sample config file (do not check in github!)
+// {
+//   "host": "HOSTNAME",
+//   "port": EXPORTED_PORT_USING_IPTABLES,
+//   "internalPort": PORT_LISTEN_TO,
+//   "clientId": "FROM_GITHUB",
+//   "clientSecret": "FROM_GITHUB",
+//   "entryPath": "/auth/github",
+//   "callbackPath": "/auth/github/callback",
+// }
+var currentConfig = JSON.parse(fs.readFileSync('config.json'));
 
 everyauth.github
   .appId(currentConfig.clientId)
