@@ -73,7 +73,7 @@ if (ss.env === 'production') ss.client.packAssets();
 
 // Start web server
 var server = http.Server(ss.http.middleware);
-server.listen(currentConfig.internalPort, currentConfig.host);
+server.listen(currentConfig.internalPort, '0.0.0.0');
 
 // Start Console Server (REPL)
 // To install client: sudo npm install -g ss-console
