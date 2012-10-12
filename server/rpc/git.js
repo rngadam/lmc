@@ -26,7 +26,7 @@
 var path = require('path');
 var sshkeys = require('sshkeys');
 var gitmanager = require('gitmanager');
-var config = require('./config.js');
+var config = require('../../config.js');
 
 
 function streamBuffer(data) {
@@ -69,7 +69,10 @@ exports.actions = function(req, res, ss){
 		},
 		// returns pubkey value (creates it if not available)
 		pubkey: function() {
-		  sshkeys.getPublicKey(config.getSshDirectory(req.session.userId), req.session.userId, 'github', function(err, key) {
+		  sshkeys.getPublicKey(
+		  	config.getSshDirectory(req.session.userId), 
+		  	'github', 
+		  	function(err, key) {
 		  	if(err) {
 		  		// publish error err
 		  		res(null);

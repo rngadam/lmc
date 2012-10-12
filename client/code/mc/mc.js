@@ -94,6 +94,7 @@ var VersionsModel = function() {
 
 var UserModel = function() {
     this.username = ko.observable("not logged in");
+    this.pubkey = ko.observable("not available yet");
 };
 
 var ReposModel = function() {
@@ -144,6 +145,17 @@ function refreshRepos() {
 refreshSystemVersions();
 refreshApps();
 refreshRepos();
+
+function refreshPubKey() {
+    ss.rpc('git.pubkey', function(pubkey) {
+        console.log('current pubkey ' + pubkey);
+        if(pubkey == null) {
+            pubkey = "not available";
+        }
+        model.user.pubkey(pubkey);
+    });     
+}
+exports.refreshPubKey = refreshPubKey;
     
 ss.rpc('auth.current', function(username) {
     console.log('current user ' + username);
@@ -152,6 +164,7 @@ ss.rpc('auth.current', function(username) {
     }
     model.user.username(username);
 }); 
+
 
 ko.applyBindings(model);    
 
