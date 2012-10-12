@@ -19,11 +19,39 @@ SocketStream offers:
 * packaging of all assets and dependencies for faster downloads (production mode)
 * built-in RPC call system
 
+# Running 
+
 ## startup
 
  node-mon app.js
 
  open localhost:3000 in your browser
+
+## Dependencies
+
+depends on the following:
+
+	apt-get install libpam0g-dev 
+	apt-get install redis-server
+
+## Binary npm
+
+These prevents the source from just being a copy:
+
+### mmap 
+
+	rm -fr node_modules/mmap
+	npm install mmap
+
+
+## running as a non-root user
+
+non-root user can't bind ports below 1024 (including HTTP port 80). Use iptables to redirect:
+
+	sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-port 8080
+	sudo iptables -t nat -A OUTPUT --src 0/0 --dst 127.0.0.1 -p tcp --dport 80 -j REDIRECT --to-ports 8080
+
+# Development
 
 ## adding an app
 
@@ -34,9 +62,23 @@ SocketStream offers:
 * modify ./app.js to ss.client.define your app dependencies and ss.http.route to route a URL to your app.
 * test (node-mon and socketstream should automatically reload on app change)
 
-## Dependencies
+## reload on changes
 
-apt-get install libpam0g-dev
+use nodemon or supervisor:
+
+	supervisor app.js
+
+# Troubleshooting
+
+## can't connect to host
+
+if console shows:
+
+   warn  - error raised: Error: getaddrinfo ENOENT
+
+check that your config.json host entry matches your hostname.
+
+Otherwise, make sure that the IP the server is listening to matches what your client is trying to connect to.
 
 ## Copyright and license notice
 
