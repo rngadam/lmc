@@ -121,6 +121,7 @@ function refreshSystemVersions() {
         model.versions.items(versions);
     });
 }
+exports.refreshSystemVersions = refreshSystemVersions;
 
 function refreshApps() {
     ss.rpc('apps.list', function(apps) {
@@ -128,6 +129,7 @@ function refreshApps() {
         model.apps.items(apps);
     });    
 }
+exports.refreshApps = refreshApps;
 
 
 function refreshRepos() {
@@ -141,10 +143,7 @@ function refreshRepos() {
         
     });    
 }
-
-refreshSystemVersions();
-refreshApps();
-refreshRepos();
+exports.refreshRepos = refreshRepos;
 
 function refreshPubKey() {
     ss.rpc('git.pubkey', function(pubkey) {

@@ -31,8 +31,8 @@
 	<div class="navbar-inner">	
 		<ul class="nav nav-tabs">
 			<a class="brand" href="http://lophilo.com" target="new">Lophilo</a>
-			<li><a href="#system" data-placement="bottom" data-toggle="tab" rel="tooltip" title="This is the system tab with some versioning and status information">System</a></li>
-			<li><a href="#editing" data-toggle="tab" rel="tooltip" title="Existing apps and the ability to create new ones with Cloud9">Applications</a></li>
+			<li><a href="#system" data-placement="bottom" data-toggle="tab" rel="tooltip" title="This is the system tab with some versioning and status information" data-bind="click: require('/mc.js').refreshSystemVersions">System</a></li>
+			<li><a href="#editing" data-toggle="tab" rel="tooltip" title="Existing apps and the ability to create new ones with Cloud9" data-bind="click: require('/mc.js').refreshApps">Applications</a></li>
 			<li><a href="#settings" data-toggle="tab" rel="tooltip" title="General system settings (security, services, accounts)">Settings</a></li>	  
 			<li class="dropdown">
 			  <a class="dropdown-toggle" data-toggle="dropdown" href="#">
@@ -113,7 +113,7 @@
 				<div>
 					<li class="span2">
 						<div class="thumbnail">
-						  	<a href="#new-app" role="button" class="btn" data-toggle="modal">
+						  	<a href="#new-app" role="button" class="btn" data-toggle="modal" data-bind="click: require('/mc.js').refreshRepos">
 						  		<img src="/icons/list-add.svg" alt="test" width=128 height=128>
 						  	</a>
 						 	<center>
