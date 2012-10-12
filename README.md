@@ -21,6 +21,10 @@ SocketStream offers:
 
 # Running 
 
+## installation
+
+* should be installed as /root/lophilo/lmc
+
 ## startup
 
  node-mon app.js
@@ -34,15 +38,18 @@ depends on the following:
 	apt-get install libpam0g-dev 
 	apt-get install redis-server
 
+npm packages dependencies:
+
+	npm install -g nodemon
+
 ## Binary npm
 
-These prevents the source from just being a copy:
+Some npm with compiled modules from just being a copy from the host system.
 
 ### mmap 
 
 	rm -fr node_modules/mmap
 	npm install mmap
-
 
 ## running as a non-root user
 
