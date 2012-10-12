@@ -25,13 +25,22 @@ var child_process = require('child_process');
 
 var assert = require('assert');
 var testurl = require('testurl');
-var config = require('./config.js');
+var config = require('../../config.js');
 
 function startCloud9(directory) {
   assert(directory, 'location of git repository required');
-  var cmd = "/home/rngadam/lophilo/cloud9/bin/cloud9.sh -w "  + directory + "";
+  var cmd = config.getCloud9Script() + " -w "  + directory + "";
 
-  var cloud9 = child_process.spawn('/bin/bash', ["-c", cmd]);
+  var cloud9 = child_process.spawn(
+    '/bin/bash', 
+    {
+      env: {
+        IP: config.getHostname()
+      }
+    }
+    ["-c", cmd]
+    );
+  
   cloud9.stdout.on('data', function(data) {
     console.log(data.toString());
   });
@@ -42,7 +51,10 @@ function startCloud9(directory) {
     console.log('cloud9 exited');
   });
 
-  return {instance: cloud9, url: "http://lophilo.local:3131"};
+  return {
+    instance: cloud9, 
+    url: "http://" + config.getIp() + ":3131"
+  };
 }
 
 exports.actions = function(req, res, ss){

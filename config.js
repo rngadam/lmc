@@ -24,19 +24,30 @@
 
 var path = require('path');
 
-var BASE_DIR = '/home/rngadam/lophilo/lmc';
+var BASE_DIR = '/root/lophilo/lmc';
 var USERS_DIR = path.join(BASE_DIR, 'users');
+
+function getNodePath() {
+    return '/usr/local/bin/node';
+}
+exports.getNodePath = getNodePath;
+
+function getCloud9Script() {
+    return '/root/lophilo/cloud9-on-lophilo/bin/cloud9.sh';
+}
+exports.getCloud9Script = getCloud9Script;
 
 function getHomeDirectory (username) {
 	return path.join(USERS_DIR, username);
 }
-
+exports.getHomeDirectory = getHomeDirectory;
 
 function getSshDirectory(username) {
 	return path.join(getHomeDirectory(), '.ssh');
 }
+exports.getSshDirectory = getSshDirectory;
 
- function getCheckoutName(repoUrl, username) {
+function getCheckoutName(repoUrl, username) {
     var index = repoUrl.lastIndexOf('/');
     var checkoutName;
     if(index>0) {
@@ -47,7 +58,20 @@ function getSshDirectory(username) {
 	
     return path.join(getHomeDirectory(username), checkoutName)	
 }
-
-exports.getHomeDirectory = getHomeDirectory;
 exports.getCheckoutName = getCheckoutName;
-exports.getSshDirectory = getSshDirectory;
+
+function getHostname() {
+    return 'lophilo.local';
+}
+exports.getHostname = getHostname;
+
+var currentPort = 8888;
+function getNextAvailablePort() {
+    return currentPort++;
+}
+exports.getNextAvailablePort = getNextAvailablePort;
+
+function getIp() {
+    return "10.42.0.38";
+}
+exports.getIp = getIp;
