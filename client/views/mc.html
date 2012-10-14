@@ -24,6 +24,12 @@
 <head>
 	<SocketStream/>
 	<title>Lophilo Management Console</title>
+	<script>
+		// https://github.com/twitter/bootstrap/pull/1845
+		function closeAlert() {
+			$('#alert-dialog').hide();
+		}
+	</script>
 </head>
 <body>
 <!-- ################################## -->
@@ -321,11 +327,12 @@
 </div>
 
 <!-- ################################## -->
-<!-- Displaying the public key dialog -->
+<!-- Displaying the error popup -->
 <!-- ################################## -->
-<div class="modal hide alert" id="alert-dialog" data-bind="with: errors">
-  <button type="button" class="close" data-dismiss="alert">x</button>
-  <strong>Error:</strong><span data-bind="text: latest"></span>
+<div class="alert alert-block alert-error hide" id="alert-dialog" data-bind="with: errors">
+  <button type="button" class="close" data-bind="click: closeAlert">x</button>
+  <h4>Error:</h4>
+  <span data-bind="text: latest().errstring"></span>
 </div>
 
 </body>

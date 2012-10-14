@@ -49,7 +49,12 @@ var StatsModel = function() {
 var ErrorsModel = function() {
     this.items = ko.observableArray();
     this.latest = ko.computed(function() {
-        return this.items[this.items.length-1];
+        if(this.items().length > 0) {
+            var last = this.items()[this.items().length-1];
+            console.log("last error: " + console.dir(last));
+            return last;
+        }
+        return "No error!";
     }, this)
 };
 
@@ -186,12 +191,12 @@ ss.rpc('auth.current', function(err, username) {
 });
 
 function logError(err) {
-    console.log(err);
+    console.log('LOGGING:' + err);
     try {
-        model.errors.items.push(err);
-        $('#alert-dialog').modal('show')
+        model.errors.items.push({errstring: "" + err});
+        $('#alert-dialog').show();
     } catch(err) {
-        console.log('error in the error handler!');
+        console.log('error in the error handler! ' + err.stack);
     }
 }
 
