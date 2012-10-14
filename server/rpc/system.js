@@ -61,13 +61,13 @@ exports.actions = function(req, res, ss){
   return {
     loadavg: function loadavg() {
       var values = os.loadavg();
-      res({one: values[0], five: values[1], fifteen: values[2] });
+      res(null, {one: values[0], five: values[1], fifteen: values[2] });
     },
     versions: function version() {
-    	res(versions);
+    	res(null, versions);
     },
     uptime: function uptime() {
-    	res({process: process.uptime(), system: os.uptime()});
+    	res(null, {process: process.uptime(), system: os.uptime()});
     }    
   }
 }

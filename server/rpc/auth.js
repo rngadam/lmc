@@ -31,7 +31,7 @@ exports.actions = function(req, res, ss){
       if(!req.session.userId) {
         username = "not logged in";
       }
-      res(username);
+      res(null, username);
     },
     authenticate: function(username, password){
       console.log(arguments);
@@ -45,7 +45,7 @@ exports.actions = function(req, res, ss){
             console.log("Authenticated!");
             if (user) {
               req.session.setUserId(user.id);
-              res(true);
+              res(null, true);
             } else {
               res('Access denied!');
             }
@@ -55,7 +55,7 @@ exports.actions = function(req, res, ss){
 
     logout: function(){
       req.session.setUserId(null);
-      res(true);
+      res(null, true);
     }
   }
 }

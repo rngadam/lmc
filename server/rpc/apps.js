@@ -28,6 +28,8 @@ var config = require('../../config.js');
 var testurl = require('testurl');
 var child_process = require('child_process');
 
+var currentApps = {};
+
 function run(directory) {
   var app = path.join(directory, 'app.js');  
   console.log('Running ' + app);
@@ -51,11 +53,10 @@ function run(directory) {
 
   return {
     instance: appInstance, 
-    url: 'http://' + config.getHostname() + '8888'
+    url: 'http://' + config.getHostname() + ':8888'
   }
 
 }
-
 
 exports.actions = function(req, res, ss) {
   req.use('session');
@@ -64,7 +65,7 @@ exports.actions = function(req, res, ss) {
   return {
 
     // Square a number and return the result
-    list: function(){
+    list: function() {
       var data = [];
       fs.readdir(config.getHomeDirectory(req.session.userId), function(err, files) {
         if(err) {
@@ -78,10 +79,9 @@ exports.actions = function(req, res, ss) {
                 name: files[i], 
                 icon: "/icons/nodejs.svg", 
                 url: "#run-app"});  
-            }
-            
+            }            
           }
-          res(data);          
+          res(null, data);          
         }
       });
     },
@@ -93,22 +93,36 @@ exports.actions = function(req, res, ss) {
         if(err) {
           res(err);
         } else {
-          res('app deleted: ' + appname);
+          res(null, 'app deleted: ' + appname);
         }      
       });
     },
     run: function(appname) {
+      if(appname in currentApps) {
+        res('application already running');
+        return;
+      }      
+      currentApps[appname] = {
+        running: false,
+        icon: "/icons/nodejs.svg", 
+      };
       var data = run(config.getCheckoutName(appname, req.session.userId));
+      var tries_counter = 0;
       testurl.testUrlAvailability(
         data.url, 
-        0, 
+        tries_counter, 
         function(err) {
           if(err) {
             res('error waiting for app to come up');
+            currentApps[appname] = undefined;
           } else {
+            currentApps[appname].running = true;
             res(null, data.url);
           }
       });
-    }      
+    },   
+    processes: function() {
+        res(null, currentApps);
+    }  
   }
 }
