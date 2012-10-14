@@ -22,14 +22,14 @@ exports.actions = function(req, res, ss){
 				assert(!error, "Error querying back-end storage" + error);
 				if(data) {
 				  console.log("fetched data from redis");
-				  res(JSON.parse(data));      
+				  res(null, JSON.parse(data));
 				}
 			  	//res(testdata);
 				github.authenticate({
 				  type: "oauth",
 				  token: req.session.oauth
 				});
-				console.log("authenticated to github");    
+				console.log("authenticated to github");
 				github.repos.getAll({}, function(error, data) {
 				    assert(!error, "Error querying github" + error);
 				    assert(data, "Empty dataset returned by github" + data);
@@ -38,9 +38,9 @@ exports.actions = function(req, res, ss){
 				    rclient.set(key, JSON.stringify(data), function(error, reply) {
 				      assert(!error, "error caching data " + data);
 				      console.log(reply);
-				      res(data);
+				      res(null, data);
 				    });
-				});		  
+				});
 			});
 		}
 	}

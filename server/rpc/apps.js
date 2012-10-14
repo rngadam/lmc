@@ -31,28 +31,28 @@ var child_process = require('child_process');
 var currentApps = {};
 
 function run(directory) {
-  var app = path.join(directory, 'app.js');  
+  var app = path.join(directory, 'app.js');
   console.log('Running ' + app);
   var appInstance = child_process.spawn(
-    config.getNodePath(), 
-    [app], 
+    config.getNodePath(),
+    [app],
     {
       cwd: directory
     }
   );
-  
+
   appInstance.stdout.on('data', function(data) {
     console.log(data.toString());
   });
   appInstance.stderr.on('data', function(data) {
     console.log(data.toString());
-  });  
+  });
   appInstance.stdout.on('exit', function(data) {
     console.log(app + ' exited');
   });
 
   return {
-    instance: appInstance, 
+    instance: appInstance,
     url: 'http://' + config.getHostname() + ':8888'
   }
 
@@ -60,7 +60,7 @@ function run(directory) {
 
 exports.actions = function(req, res, ss) {
   req.use('session');
-  req.use('debug');
+  //req.use('debug');
   req.use('admin.user.checkAuthenticated');
   return {
 
@@ -76,12 +76,12 @@ exports.actions = function(req, res, ss) {
             console.log(files[i]);
             if(files[i].indexOf('.git') > 0) {
               data.push({
-                name: files[i], 
-                icon: "/icons/nodejs.svg", 
-                url: "#run-app"});  
-            }            
+                name: files[i],
+                icon: "/icons/nodejs.svg",
+                url: "#run-app"});
+            }
           }
-          res(null, data);          
+          res(null, data);
         }
       });
     },
@@ -94,23 +94,23 @@ exports.actions = function(req, res, ss) {
           res(err);
         } else {
           res(null, 'app deleted: ' + appname);
-        }      
+        }
       });
     },
     run: function(appname) {
       if(appname in currentApps) {
         res('application already running');
         return;
-      }      
+      }
       currentApps[appname] = {
         running: false,
-        icon: "/icons/nodejs.svg", 
+        icon: "/icons/nodejs.svg",
       };
       var data = run(config.getCheckoutName(appname, req.session.userId));
       var tries_counter = 0;
       testurl.testUrlAvailability(
-        data.url, 
-        tries_counter, 
+        data.url,
+        tries_counter,
         function(err) {
           if(err) {
             res('error waiting for app to come up');
@@ -120,9 +120,9 @@ exports.actions = function(req, res, ss) {
             res(null, data.url);
           }
       });
-    },   
+    },
     processes: function() {
         res(null, currentApps);
-    }  
+    }
   }
 }
