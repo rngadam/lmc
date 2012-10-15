@@ -29,31 +29,32 @@ var config = require('../../config.js');
 
 function startCloud9(directory) {
   assert(directory, 'location of git repository required');
-  var cmd = config.getCloud9Script() + " -w "  + directory + "";
-
+  var cmd = config.getCloud9ScriptRelativePath() + " lophilo -w "  + directory + "";
+  console.log('running ' + cmd);
   var cloud9 = child_process.spawn(
-    '/bin/bash', 
+    '/bin/bash',
     {
+      cwd: config.getCloud9Path(),
       env: {
-        IP: config.getHostname()
+        IP: '0.0.0.0'
       }
     }
     ["-c", cmd]
-    );
-  
+  );
+
   cloud9.stdout.on('data', function(data) {
     console.log(data.toString());
   });
   cloud9.stderr.on('data', function(data) {
     console.log(data.toString());
-  });  
+  });
   cloud9.stdout.on('exit', function(data) {
     console.log('cloud9 exited');
   });
 
   return {
-    instance: cloud9, 
-    url: "http://" + config.getIp() + ":3131"
+    instance: cloud9,
+    url: "http://" + config.getHostname() + ":3131"
   };
 }
 
@@ -69,7 +70,7 @@ exports.actions = function(req, res, ss){
           res('error waiting for cloud9 to come up');
           data.instance.kill();
         } else {
-          res(data.url);
+          res(null, data.url);
         }
       });
     }

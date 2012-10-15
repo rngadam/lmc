@@ -24,18 +24,29 @@
 
 var path = require('path');
 
-var BASE_DIR = '/root/lophilo/lmc';
-var USERS_DIR = path.join(BASE_DIR, 'users');
+var INSTALL_DIR = '/home/lophilo/lophilo';
+var LMC_DIR = path.join(INSTALL_DIR, 'lmc');
+var USERS_DIR = path.join(LMC_DIR, 'users');
+
+function getInstallDir() {
+    return INSTALL_DIR;
+}
+exports.getInstallDir = getInstallDir;
 
 function getNodePath() {
     return '/usr/local/bin/node';
 }
 exports.getNodePath = getNodePath;
 
-function getCloud9Script() {
-    return '/root/lophilo/cloud9-on-lophilo/bin/cloud9.sh';
+function getCloud9Path() {
+    return path.join(getInstallDir(), 'cloud9');
 }
-exports.getCloud9Script = getCloud9Script;
+exports.getCloud9Path = getCloud9Path;
+
+function getCloud9ScriptRelativePath() {
+    return './bin/cloud9.sh';
+}
+exports.getCloud9ScriptRelativePath = getCloud9ScriptRelativePath;
 
 function getHomeDirectory (username) {
 	return path.join(USERS_DIR, username);
@@ -51,12 +62,12 @@ function getCheckoutName(repoUrl, username) {
     var index = repoUrl.lastIndexOf('/');
     var checkoutName;
     if(index>0) {
-       checkoutName = repoUrl.slice(index+1); 
+       checkoutName = repoUrl.slice(index+1);
     } else {
         checkoutName = repoUrl;
     }
-	
-    return path.join(getHomeDirectory(username), checkoutName)	
+
+    return path.join(getHomeDirectory(username), checkoutName)
 }
 exports.getCheckoutName = getCheckoutName;
 
