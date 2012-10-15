@@ -1,0 +1,7 @@
+#!/bin/sh
+# works with OpenSSH_5.9p1
+# For use in the lmc and cloud9 internals to use per-"user"
+# keys and disable host checking.
+DIRNAME=`pwd`
+KEYNAME="$DIRNAME/../.ssh/github"
+exec /usr/bin/ssh -i $KEYNAME -o StrictHostKeyChecking=false "$@"
