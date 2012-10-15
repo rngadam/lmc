@@ -63,8 +63,6 @@ exports.actions = function(req, res, ss) {
   //req.use('debug');
   req.use('admin.user.checkAuthenticated');
   return {
-
-    // Square a number and return the result
     list: function() {
       var data = [];
       fs.readdir(config.getHomeDirectory(req.session.userId), function(err, files) {
