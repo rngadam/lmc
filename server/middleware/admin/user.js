@@ -7,6 +7,6 @@ exports.checkAuthenticated = function() {
     	return next();
     }
     console.log('NO session available');
-    res(false); // Access denied: prevent request from continuing
+    res("Access denied: not logged in yet!"); // Access denied: prevent request from continuing
   }
 }
