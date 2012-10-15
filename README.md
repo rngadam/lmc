@@ -37,10 +37,22 @@ Adapt the script start_lophilo.sh to your needs.
 
 ## Dependencies
 
+### Kernel
+
+To forward from port 80 to 8080, you need the following Netfilter option enabled:
+
+	CONFIG_IP_NF_TARGET_REDIRECT=m
+
+### Debian packages
+
 depends on the following:
 
 	apt-get install libpam0g-dev
 	apt-get install redis-server
+
+### Node.JS
+
+Node.JS version 0.8.11
 
 npm global packages dependencies:
 
