@@ -1,4 +1,4 @@
-# The Main Controller (mc)
+# The Lophilo Main Controller (mc)
 
 Lophilo main web console from which users can:
 
@@ -19,37 +19,39 @@ SocketStream offers:
 * packaging of all assets and dependencies for faster downloads (production mode)
 * built-in RPC call system
 
-# Running 
+# Running
 
 ## installation
 
-* should be installed as /root/lophilo/lmc
+Should be installed as /home/lophilo/lophilo/lmc
+
+We want to run as a non-root user for additional safety. Many server-side services also expect running as a user, not root.
+
+Note: for developers, we recommend exporting your $HOME/lophilo to NFS and mounting the NFS drive on lophilo.
 
 ## startup
 
- node-mon app.js
+Adapt the script start_lophilo.sh to your needs.
 
- open localhost:3000 in your browser
+ open lophilo.local in your browser
 
 ## Dependencies
 
 depends on the following:
 
-	apt-get install libpam0g-dev 
+	apt-get install libpam0g-dev
 	apt-get install redis-server
 
-npm packages dependencies:
+npm global packages dependencies:
 
 	npm install -g nodemon
 
 ## Binary npm
 
-Some npm with compiled modules from just being a copy from the host system.
+Some npm with compiled modules from just being a copy from the host system:
 
-### mmap 
-
-	rm -fr node_modules/mmap
-	npm install mmap
+* mmap
+* socket.io
 
 ## running as a non-root user
 
@@ -62,6 +64,8 @@ non-root user can't bind ports below 1024 (including HTTP port 80). Use iptables
 
 ## adding an app
 
+lmc is based on the SocketStream framework. This means you can create additional apps as part of the lmc directory structure:
+
 * create directory and file ./client/code/<appname>/<appname>.js
 * create file ./client/code/<appname>/entry.js (copy from other existing)
 * make sure the require in entry.js points to <appname>
@@ -69,11 +73,15 @@ non-root user can't bind ports below 1024 (including HTTP port 80). Use iptables
 * modify ./app.js to ss.client.define your app dependencies and ss.http.route to route a URL to your app.
 * test (node-mon and socketstream should automatically reload on app change)
 
-## reload on changes
+## reload on client changes
 
-use nodemon or supervisor:
+use nodemon (or supervisor):
 
-	supervisor app.js
+	nodemon app.js
+
+Note: this only reloads on changes with client/; for server-side see the bug:
+
+https://github.com/socketstream/socketstream/issues/310
 
 # Troubleshooting
 
@@ -85,7 +93,7 @@ if console shows:
 
 check that your config.json host entry matches your hostname.
 
-Otherwise, make sure that the IP the server is listening to matches what your client is trying to connect to.
+Otherwise, make sure that the IP the server is listening to matches what your client is trying to connect to. Use 0.0.0.0 to bind to any IP.
 
 ## Copyright and license notice
 
