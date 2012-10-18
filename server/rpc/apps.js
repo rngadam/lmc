@@ -109,6 +109,7 @@ exports.actions = function(req, res, ss) {
       testurl.testUrlAvailability(
         data.url,
         tries_counter,
+        {},
         function(err) {
           if(err) {
             res('error waiting for app to come up');

@@ -33,30 +33,22 @@ function startCloud9(directory) {
   console.log('running ' + cmd);
   var cloud9 = child_process.spawn(
     '/bin/bash',
+    ["-c", cmd],
     {
       cwd: config.getCloud9Path(),
       env: {
         IP: '0.0.0.0'
-      }
+      },
+      stdio: 'inherit'
     }
-    ["-c", cmd]
   );
-
-  cloud9.stdout.on('data', function(data) {
-    console.log(data.toString());
-  });
-  cloud9.stderr.on('data', function(data) {
-    console.log(data.toString());
-  });
-  cloud9.stdout.on('exit', function(data) {
-    console.log('cloud9 exited');
-  });
 
   return {
     instance: cloud9,
     url: "http://" + config.getHostname() + ":3131"
   };
 }
+exports.startCloud9 = startCloud9;
 
 exports.actions = function(req, res, ss){
   req.use('session');
