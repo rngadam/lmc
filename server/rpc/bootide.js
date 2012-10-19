@@ -3,12 +3,19 @@
 var path = require('path');
 var architect = require('architect');
 var ideconfig = require('./ideconfig');
+var fs = require('fs');
 
 function BootIdeException(message) {
 	this.message = message;
 }
 BootIdeException.prototype = new Error;
 
+function archive(obj, filename) {
+	fs.writeFile(filename, JSON.stringify(obj, null, 4), function(err) {
+		if(err) console.log(err.stack);
+		else console.log('wrote %s', filename);
+	});
+}
 // hostname == request.headers.host
 // ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress
 function boot(dirname, workdir, options, cb) {
@@ -17,14 +24,23 @@ function boot(dirname, workdir, options, cb) {
 	var packedName = options.packedName || '';
 	var ip = options.ip || '0.0.0.0';
 	var port = options.port || 0;
+
 	if(!(cb instanceof Function)) {
 		throw new BootIdeException("callback must be function, got: " + cb);
 	}
+
+	process.env['PORT'] = port;
+	process.env['IP'] = ip;
+	// var configPath = path.resolve(dirname, "./configs/", "lophilo.js");
+	// var plugins = require(configPath);
+
 	var plugins = ideconfig.getConfig(
-		dirname,
-		workdir,
-		ip,
-		port);
+	 	dirname,
+	 	workdir,
+	 	ip,
+	 	port);
+
+	archive(plugins, 'plugins.txt');
 
 	// server plugins
 	plugins.forEach(function(plugin) {
@@ -56,7 +72,6 @@ function boot(dirname, workdir, options, cb) {
 		}
 	);
 }
-
 exports.boot = boot;
 
 if (require.main === module) {
@@ -67,7 +82,8 @@ if (require.main === module) {
 		cloud9Dir,
 		process.env['HOME'],
 		{
-			port: 3131
+			port: 0
+			//debug: true
 		},
 		function(err, address) {
 			if(err) throw err;

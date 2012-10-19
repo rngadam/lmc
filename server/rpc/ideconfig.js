@@ -18,13 +18,13 @@ function getClientExtensions(dirname) {
             continue;
 
         var name = dir.split(".")[1];
-        clientExtensions[name] = dirname + dir;
+        clientExtensions[name] = path.join(dirname, dir);
     }
     return clientExtensions;
 }
 
-function getConfig(dirname, projectDir, ip, port) {
-    if(!(typeof dirname == 'string'
+function getConfig(cloud9Dirname, projectDir, ip, port) {
+    if(!(typeof cloud9Dirname == 'string'
         && typeof projectDir == 'string'
         && typeof ip == 'string'
         && typeof port == 'number')) {
@@ -35,8 +35,11 @@ function getConfig(dirname, projectDir, ip, port) {
             +  [].slice.call(arguments));
 
     }
-    var clientExtensions = getClientExtensions(path.join(dirname, 'plugins-client'));
+    var clientExtensions = getClientExtensions(
+        path.join(cloud9Dirname, 'plugins-client'));
     //console.dir(clientExtensions);
+    //original config is relative to configs subdir
+    var dirname = path.join(cloud9Dirname, 'configs');
     var fsUrl = "/workspace";
     var vfsUrl = "/vfs";
 
@@ -160,7 +163,7 @@ function getConfig(dirname, projectDir, ip, port) {
                 "ext/gitblame/gitblame",
                 //"ext/githistory/githistory",
                 "ext/autosave/autosave",
-                "ext/revisions/revisions",
+                //"ext/revisions/revisions", // TODO: error reloading on the client
                 "ext/quicksearch/quicksearch",
                 "ext/language/liveinspect",
                 //"ext/splitview/splitview"
