@@ -27,6 +27,7 @@ var everyauth = require('everyauth');
 var assert = require('assert');
 var localconfigs = require('ss-localconfigs');
 var fs = require('fs');
+var path = require('path');
 
 // sample config file (do not check in github!)
 // {
@@ -38,7 +39,7 @@ var fs = require('fs');
 //   "entryPath": "/auth/github",
 //   "callbackPath": "/auth/github/callback",
 // }
-var currentConfig = JSON.parse(fs.readFileSync('config.json'));
+var currentConfig = JSON.parse(fs.readFileSync(path.join(__dirname, 'config.json')));
 
 everyauth.github
   .appId(currentConfig.clientId)
@@ -57,7 +58,9 @@ everyauth.github
 ss.http.middleware.prepend(ss.http.connect.bodyParser());
 ss.http.middleware.append(everyauth.middleware());
 
-localconfigs.applyConfigs(ss, './client/code', '.socketstream.json');
+localconfigs.applyConfigs(
+  ss,
+  path.join(__dirname, 'client/code'), '.socketstream.json');
 
 // Code Formatters
 ss.client.formatters.add(require('ss-stylus'));
