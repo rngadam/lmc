@@ -1,6 +1,5 @@
 "use strict";
 
-var http = require('http');
 var forkarator = require('forkarator');
 var bootide = require('./bootide');
 var config = require('../../config.js');

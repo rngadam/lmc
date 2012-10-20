@@ -100,3 +100,8 @@ function getCheckoutName(repoUrl, username) {
     return path.join(getHomeDirectory(username), checkoutName)
 }
 exports.getCheckoutName = getCheckoutName;
+
+function createURL(port) {
+    return 'http://' + get('hostname') + ':' + port
+}
+exports.createURL = createURL;

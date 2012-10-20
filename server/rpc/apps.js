@@ -25,37 +25,15 @@
 var fs = require('fs');
 var path = require('path');
 var config = require('../../config.js');
-var testurl = require('testurl');
-var child_process = require('child_process');
+var forkarator = require('forkarator');
 
-var currentApps = {};
+var forkerPath = path.resolve(path.join(__dirname, 'forkapp.js'));
 
-function run(directory) {
+function run(directory, cb) {
   var app = path.join(directory, 'app.js');
   console.log('Running ' + app);
-  var appInstance = child_process.spawn(
-    config.getNodePath(),
-    [app],
-    {
-      cwd: directory
-    }
-  );
-
-  appInstance.stdout.on('data', function(data) {
-    console.log(data.toString());
-  });
-  appInstance.stderr.on('data', function(data) {
-    console.log(data.toString());
-  });
-  appInstance.stdout.on('exit', function(data) {
-    console.log(app + ' exited');
-  });
-
-  return {
-    instance: appInstance,
-    url: 'http://' + config.get('hostname') + ':8888'
-  }
-
+  var id = app;
+  forkarator.start(id, forkerPath, [id, app], { cwd: directory }, cb);
 }
 
 exports.actions = function(req, res, ss) {
@@ -96,32 +74,32 @@ exports.actions = function(req, res, ss) {
       });
     },
     run: function(appname) {
-      if(appname in currentApps) {
-        res('application already running');
-        return;
-      }
-      currentApps[appname] = {
-        running: false,
-        icon: "/icons/nodejs.svg",
-      };
-      var data = run(config.getCheckoutName(appname, req.session.userId));
-      var tries_counter = 0;
-      testurl.testUrlAvailability(
-        data.url,
-        tries_counter,
-        {},
-        function(err) {
-          if(err) {
-            res('error waiting for app to come up');
-            currentApps[appname] = undefined;
-          } else {
-            currentApps[appname].running = true;
-            res(null, data.url);
+      var data = run(config.getCheckoutName(appname, req.session.userId),
+        function(err, port) {
+          if(err && typeof err == 'object') {
+            err = err.toString();
           }
-      });
+          var url;
+          if(port) { // if the error is already started, the port is still valid
+            url = config.createURL(port);
+          } else {
+            url = null;
+          }
+          res(err, url);
+        }
+      );
     },
     processes: function() {
-        res(null, currentApps);
+      forkarator.list(function(err, childs) {
+        var data = [];
+        for(var i in childs) {
+          data.push({
+            name: childs[i].id,
+            icon: "/icons/nodejs.svg",
+          });
+        }
+        res(err, data);
+      });
     }
   }
 }
