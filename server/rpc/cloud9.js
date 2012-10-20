@@ -21,34 +21,21 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-var child_process = require('child_process');
-
 var assert = require('assert');
-var testurl = require('testurl');
+var forkarator = require('forkarator');
 var config = require('../../config.js');
+var path = require('path');
+var script = path.join(__dirname, 'forkide.js');
 
-function startCloud9(directory) {
+function startCloud9(directory, cb) {
   assert(directory, 'location of git repository required');
-  var cmd = config.getCloud9ScriptRelativePath() + " lophilo -w "  + directory + "";
-  console.log('running ' + cmd);
-  var cloud9 = child_process.spawn(
-    '/bin/bash',
-    ["-c", cmd],
-    {
-      cwd: config.getCloud9Path(),
-      env: {
-        IP: '0.0.0.0'
-      },
-      stdio: 'inherit'
-    }
-  );
-
-  return {
-    instance: cloud9,
-    url: "http://" + config.getHostname() + ":3131"
-  };
+  var id = directory;
+  forkarator.start(id, script, [id, directory], cb);
 }
-exports.startCloud9 = startCloud9;
+
+function createUrl(req, port) {
+    return 'http://' + config.get('hostname') + ':' + port;
+}
 
 exports.actions = function(req, res, ss){
   req.use('session');
@@ -56,13 +43,12 @@ exports.actions = function(req, res, ss){
   req.use('admin.user.checkAuthenticated');
   return {
     edit: function(repoUrl) {
-      var data = startCloud9(config.getCheckoutName(repoUrl, req.session.userId));
-      testurl.testUrlAvailability(data.url, 0, function(err) {
+      var dir = config.getCheckoutName(repoUrl, req.session.userId);
+      var data = startCloud9(dir, function(err, port) {
         if(err) {
-          res('error waiting for cloud9 to come up');
-          data.instance.kill();
+          res('error waiting for cloud9 to come up' + err.stack);
         } else {
-          res(null, data.url);
+          res(null, createUrl(req, port));
         }
       });
     }

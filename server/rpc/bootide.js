@@ -29,18 +29,13 @@ function boot(dirname, workdir, options, cb) {
 		throw new BootIdeException("callback must be function, got: " + cb);
 	}
 
-	process.env['PORT'] = port;
-	process.env['IP'] = ip;
-	// var configPath = path.resolve(dirname, "./configs/", "lophilo.js");
-	// var plugins = require(configPath);
-
 	var plugins = ideconfig.getConfig(
 	 	dirname,
 	 	workdir,
 	 	ip,
 	 	port);
 
-	archive(plugins, 'plugins.txt');
+	//archive(plugins, 'plugins.txt');
 
 	// server plugins
 	plugins.forEach(function(plugin) {
