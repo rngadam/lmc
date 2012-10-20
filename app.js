@@ -26,26 +26,17 @@ var ss = require('socketstream');
 var everyauth = require('everyauth');
 var assert = require('assert');
 var localconfigs = require('ss-localconfigs');
-var fs = require('fs');
-var path = require('path');
 
-// sample config file (do not check in github!)
-// {
-//   "host": "HOSTNAME",
-//   "port": EXPORTED_PORT_USING_IPTABLES,
-//   "internalPort": PORT_LISTEN_TO,
-//   "clientId": "FROM_GITHUB",
-//   "clientSecret": "FROM_GITHUB",
-//   "entryPath": "/auth/github",
-//   "callbackPath": "/auth/github/callback",
-// }
-var currentConfig = JSON.parse(fs.readFileSync(path.join(__dirname, 'config.json')));
+var path = require('path');
+var config = require('./config.js');
+
+config.setTarget('local.host', 3000);
 
 everyauth.github
-  .appId(currentConfig.clientId)
-  .appSecret(currentConfig.clientSecret)
-  .entryPath(currentConfig.entryPath)
-  .callbackPath(currentConfig.callbackPath)
+  .appId(config.get('clientId'))
+  .appSecret(config.get('clientSecret'))
+  .entryPath(config.get('entryPath'))
+  .callbackPath(config.get('callbackPath'))
   .scope('repo')
   .findOrCreateUser( function (session, accessToken, accessTokenExtra, githubUserMetadata) {
     session.oauth = accessToken;
@@ -76,13 +67,13 @@ if (ss.env === 'production') ss.client.packAssets();
 
 // Start web server
 var server = http.Server(ss.http.middleware);
-server.listen(currentConfig.internalPort, '0.0.0.0');
+server.listen(config.get('internalPort'), '0.0.0.0');
 
 // Start Console Server (REPL)
 // To install client: sudo npm install -g ss-console
 // To connect: ss-console <optional_host_or_port>
 var consoleServer = require('ss-console')(ss);
-consoleServer.listen(currentConfig.internalPort + 1);
+consoleServer.listen(config.get('internalPort') + 1);
 
 // Start SocketStream
 ss.start(server);

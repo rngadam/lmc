@@ -53,7 +53,7 @@ function run(directory) {
 
   return {
     instance: appInstance,
-    url: 'http://' + config.getHostname() + ':8888'
+    url: 'http://' + config.get('hostname') + ':8888'
   }
 
 }

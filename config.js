@@ -23,10 +23,40 @@
  */
 
 var path = require('path');
+var fs = require('fs');
 
-var INSTALL_DIR = '/home/lophilo/lophilo';
-var LMC_DIR = path.join(INSTALL_DIR, 'lmc');
+var INSTALL_DIR = path.resolve('.', path.join(__dirname, '..'));
+var LMC_DIR = __dirname;
 var USERS_DIR = path.join(LMC_DIR, 'users');
+
+// sample config file (do not check in github!)
+// {
+//   "hostname": "HOSTNAME",
+//   "port": EXPORTED_PORT_USING_IPTABLES,
+//   "internalPort": PORT_LISTEN_TO,
+//   "clientId": "FROM_GITHUB",
+//   "clientSecret": "FROM_GITHUB",
+//   "entryPath": "/auth/github",
+//   "callbackPath": "/auth/github/callback",
+// }
+var configs = JSON.parse(fs.readFileSync(path.join(__dirname, 'config.json')));
+var currentConfig;
+
+function setTarget(hostname, port) {
+    for(var i in configs) {
+        if(hostname == configs[i].hostname && port == configs[i].port) {
+            currentConfig = configs[i];
+            return;
+        }
+    }
+    throw new Error('configuration not found for hostname ' + hostname);
+}
+exports.setTarget = setTarget;
+
+function get(key) {
+    return currentConfig[key];
+}
+exports.get = get;
 
 function getInstallDir() {
     return INSTALL_DIR;
@@ -70,19 +100,3 @@ function getCheckoutName(repoUrl, username) {
     return path.join(getHomeDirectory(username), checkoutName)
 }
 exports.getCheckoutName = getCheckoutName;
-
-function getHostname() {
-    return 'lophilo.local';
-}
-exports.getHostname = getHostname;
-
-var currentPort = 8888;
-function getNextAvailablePort() {
-    return currentPort++;
-}
-exports.getNextAvailablePort = getNextAvailablePort;
-
-function getIp() {
-    return "10.42.0.38";
-}
-exports.getIp = getIp;
