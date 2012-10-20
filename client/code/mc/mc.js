@@ -118,9 +118,11 @@ exports.edit = function(app) {
 exports.run = function(app) {
     console.log('running app ' + app);
     ss.rpc('apps.run', app.name, function(err, url) {
-        if(err) { logError(err); return; }
-        console.log(url);
-        window.open(url);
+        if(err) { logError(err); }
+        if(url) {
+            console.log(url);
+            window.open(url);
+        }
     });
 }
 
