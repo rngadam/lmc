@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 /*
  * Wrap a SocketStream app to track on which port the webapp is available.
@@ -27,8 +27,8 @@ function setup(id, appPath) {
 	forkarator.setup(id, process);
 	var app = require(appPath);
 	app.main(function(err, port) {
-		if(err) throw err;
-		console.log("Listening on port %d", port);
+		if (err) throw err;
+		console.log('Listening on port %d', port);
 		forkarator.register(id, port);
 	});
 }

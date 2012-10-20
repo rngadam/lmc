@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 var path = require('path');
 var architect = require('architect');
@@ -12,7 +12,7 @@ BootIdeException.prototype = new Error;
 
 function archive(obj, filename) {
 	fs.writeFile(filename, JSON.stringify(obj, null, 4), function(err) {
-		if(err) console.log(err.stack);
+		if (err) console.log(err.stack);
 		else console.log('wrote %s', filename);
 	});
 }
@@ -25,8 +25,8 @@ function boot(dirname, workdir, options, cb) {
 	var ip = options.ip || '0.0.0.0';
 	var port = options.port || 0;
 
-	if(!(cb instanceof Function)) {
-		throw new BootIdeException("callback must be function, got: " + cb);
+	if (!(cb instanceof Function)) {
+		throw new BootIdeException('callback must be function, got: ' + cb);
 	}
 
 	var plugins = ideconfig.getConfig(
@@ -42,7 +42,7 @@ function boot(dirname, workdir, options, cb) {
 		if (plugin.packagePath && /\.\/cloud9.core$/.test(plugin.packagePath)) {
 			//TODO: strange, in the original configuration
 			// does that mean this is always overridden?
-			if(!plugin.debug) {
+			if (!plugin.debug) {
 				plugin.debug = debug;
 			}
 
@@ -55,7 +55,7 @@ function boot(dirname, workdir, options, cb) {
 		architect.resolveConfig(
 			plugins,
 			path.join(dirname, 'plugins-server')),
-		function (err, app) {
+		function(err, app) {
 		   if (err) {
 		       console.error("While starting the '%s' for '%s':", dirname, workdir);
 		       cb(err);
@@ -81,8 +81,8 @@ if (require.main === module) {
 			//debug: true
 		},
 		function(err, address) {
-			if(err) throw err;
-			console.log("%s:%d", address.address, address.port);
+			if (err) throw err;
+			console.log('%s:%d', address.address, address.port);
 		}
 	);
 }

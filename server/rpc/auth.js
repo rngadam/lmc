@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 /*
  * SocketStream application application Management Console for Lophilo
  *
@@ -20,29 +20,29 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-exports.actions = function(req, res, ss){
+exports.actions = function(req, res, ss) {
 
   // tell SocketStream to load session data
   req.use('session');
 
   return {
     current: function() {
-      var username = req.session.userId
-      if(!req.session.userId) {
-        username = "not logged in";
+      var username = req.session.userId;
+      if (!req.session.userId) {
+        username = 'not logged in';
       }
       res(null, username);
     },
-    authenticate: function(username, password){
+    authenticate: function(username, password) {
       console.log(arguments);
       var pam = require('authenticate-pam');
       pam.authenticate(username, password, function(err, user) {
           console.log(arguments);
-          if(err) {
+          if (err) {
             console.log(err);
           }
           else {
-            console.log("Authenticated!");
+            console.log('Authenticated!');
             if (user) {
               req.session.setUserId(user.id);
               res(null, true);
@@ -50,12 +50,12 @@ exports.actions = function(req, res, ss){
               res('Access denied!');
             }
           }
-      }, {serviceName: 'lmc', remoteHost: 'localhost'});      
+      }, {serviceName: 'lmc', remoteHost: 'localhost'});
     },
 
-    logout: function(){
+    logout: function() {
       req.session.setUserId(null);
       res(null, true);
     }
-  }
-}
+  };
+};

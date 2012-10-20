@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 /*
  * Offer general system level RPC
@@ -26,34 +26,34 @@ var os = require('os');
 var fs = require('fs');
 
 var versions = {
-	data: [	
+	data: [
 		{
-			name: "Management Console", 
-			version: "1.0" 
+			name: 'Management Console',
+			version: '1.0'
 		},
 		{
-			name: "Hardware platform", 
-			version: "version 1.0 (tabby)"
+			name: 'Hardware platform',
+			version: 'version 1.0 (tabby)'
 		},
 		{
-			name: "Operating system", 
-			version: "Debian Wheezy 7.0"
+			name: 'Operating system',
+			version: 'Debian Wheezy 7.0'
 		},
 		{
-			name: "Linux Kernel", 
-			version: "3.4.4"
+			name: 'Linux Kernel',
+			version: '3.4.4'
 		},
 		{
-			name: "Kernel driver", 
-			version: "1.0 (tabby)"
+			name: 'Kernel driver',
+			version: '1.0 (tabby)'
 		}
 	]
 };
 
-for(var k in process.versions) {
+for (var k in process.versions) {
 	versions.data.push({name: k, version: process.versions[k]});
-}	
-exports.actions = function(req, res, ss){
+}
+exports.actions = function(req, res, ss) {
 
   // Easily debug incoming requests here
   //console.log(req);
@@ -68,6 +68,6 @@ exports.actions = function(req, res, ss){
     },
     uptime: function uptime() {
     	res(null, {process: process.uptime(), system: os.uptime()});
-    }    
-  }
-}
+    }
+  };
+};

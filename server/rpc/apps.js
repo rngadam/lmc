@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 /*
  * Start web apps RPC
@@ -44,17 +44,17 @@ exports.actions = function(req, res, ss) {
     list: function() {
       var data = [];
       fs.readdir(config.getHomeDirectory(req.session.userId), function(err, files) {
-        if(err) {
+        if (err) {
           res(err);
         } else {
           console.log(files);
-          for(var i in files) {
+          for (var i in files) {
             console.log(files[i]);
-            if(files[i].indexOf('.git') > 0) {
+            if (files[i].indexOf('.git') > 0) {
               data.push({
                 name: files[i],
-                icon: "/icons/nodejs.svg",
-                url: "#run-app"});
+                icon: '/icons/nodejs.svg',
+                url: '#run-app'});
             }
           }
           res(null, data);
@@ -62,11 +62,11 @@ exports.actions = function(req, res, ss) {
       });
     },
     rm: function(appname) {
-      var exec = require( 'child_process' ).exec;
+      var exec = require('child_process').exec;
       var path = config.getCheckoutName(appname, req.session.userId);
 
-      exec('/bin/rm -fr ' + path, function ( err, stdout, stderr ){
-        if(err) {
+      exec('/bin/rm -fr ' + path, function(err, stdout, stderr ) {
+        if (err) {
           res(err);
         } else {
           res(null, 'app deleted: ' + appname);
@@ -76,11 +76,11 @@ exports.actions = function(req, res, ss) {
     run: function(appname) {
       var data = run(config.getCheckoutName(appname, req.session.userId),
         function(err, port) {
-          if(err && typeof err == 'object') {
+          if (err && typeof err == 'object') {
             err = err.toString();
           }
           var url;
-          if(port) { // if the error is already started, the port is still valid
+          if (port) { // if the error is already started, the port is still valid
             url = config.createURL(port);
           } else {
             url = null;
@@ -92,14 +92,14 @@ exports.actions = function(req, res, ss) {
     processes: function() {
       forkarator.list(function(err, childs) {
         var data = [];
-        for(var i in childs) {
+        for (var i in childs) {
           data.push({
             name: childs[i].id,
-            icon: "/icons/nodejs.svg",
+            icon: '/icons/nodejs.svg'
           });
         }
         res(err, data);
       });
     }
-  }
-}
+  };
+};

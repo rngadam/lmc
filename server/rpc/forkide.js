@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 var forkarator = require('forkarator');
 var bootide = require('./bootide');
@@ -13,8 +13,8 @@ function setup(id, dir) {
 			port: 0
 		},
 		function(err, address) {
-			if(err) throw err;
-			console.log("%s:%d", address.address, address.port);
+			if (err) throw err;
+			console.log('%s:%d', address.address, address.port);
 			forkarator.register(id, address.port);
 		}
 	);
@@ -27,6 +27,6 @@ if (require.main === module) {
 	// argument 3: directory that we are working from
 	var id = process.argv[2];
 	var dir = process.argv[3];
-	console.log('forking id: %s, dir: %s', id, dir)
+	console.log('forking id: %s, dir: %s', id, dir);
 	setup(id, dir);
 }

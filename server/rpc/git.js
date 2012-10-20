@@ -1,5 +1,5 @@
 
-"use strict";
+'use strict';
 
 /*
  * git repositories API for Lophilo
@@ -51,7 +51,7 @@ function checkout(repoUrl, username, cb) {
 		);
 }
 
-exports.actions = function(req, res, ss){
+exports.actions = function(req, res, ss) {
 	req.use('session');
 	req.use('debug');
 	req.use('admin.user.checkAuthenticated');
@@ -60,7 +60,7 @@ exports.actions = function(req, res, ss){
 		// using the ssh key
 		checkout: function(repoUrl) {
 			checkout(repoUrl, req.session.userId, function(err) {
-				if(err) {
+				if (err) {
 					res('Error: could not checkout repository: ' + err.stack);
 				} else {
 					res('Repository has been checked out ' + repoUrl);
@@ -70,16 +70,16 @@ exports.actions = function(req, res, ss){
 		// returns pubkey value (creates it if not available)
 		pubkey: function() {
 		  sshkeys.getPublicKey(
-		  	config.getSshDirectory(req.session.userId), 
-		  	'github', 
+		  	config.getSshDirectory(req.session.userId),
+		  	'github',
 		  	function(err, key) {
-		  	if(err) {
+		  	if (err) {
 		  		// publish error err
 		  		res(null);
 		  	} else {
 		  		res(key);
 		  	}
 		  });
-		}		
-	}
-}
+		}
+	};
+};

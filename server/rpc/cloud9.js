@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 /*
  * Launch cloud9 IDE [ss.rpc("cloud9.edit", "git@github.com:Lophilo/sshkeys.git")]
@@ -33,7 +33,7 @@ function startCloud9(directory, cb) {
   forkarator.start(id, script, [id, directory], { cwd: directory }, cb);
 }
 
-exports.actions = function(req, res, ss){
+exports.actions = function(req, res, ss) {
   req.use('session');
   req.use('debug');
   req.use('admin.user.checkAuthenticated');
@@ -41,12 +41,12 @@ exports.actions = function(req, res, ss){
     edit: function(repoUrl) {
       var dir = config.getCheckoutName(repoUrl, req.session.userId);
       var data = startCloud9(dir, function(err, port) {
-        if(err) {
+        if (err) {
           res('error waiting for cloud9 to come up' + err.stack);
         } else {
           res(null, config.createURL(port));
         }
       });
     }
-  }
-}
+  };
+};
