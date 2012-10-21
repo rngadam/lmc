@@ -28,11 +28,86 @@ console.log('mc loading');
 
 
 var AppsModel = function() {
-  this.items = ko.observableArray();
-};
+  var self = this;
+  self.items = ko.observableArray();
+  self.name = ko.observable();
+
+  self.createApp = function() {
+    console.log("new app name %s", this.name());
+    $("#new-app").modal('hide');
+  }
+
+  self.refresh = function() {
+    ss.rpc('apps.list', function(err, apps) {
+      if (err) { logError(err); return; }
+      console.log('application list received');
+      self.items(apps);
+    });
+  }
+
+  self.run = function(app) {
+    console.log('running app ' + app);
+    ss.rpc('apps.run', app.name, function(err, url) {
+      if (err) { logError(err); }
+      if (url) {
+        console.log(url);
+        window.open(url);
+      }
+    });
+  }
+
+  self.edit = function(app) {
+    console.log('editing doc');
+    ss.rpc('cloud9.edit', app.name, function(err, url) {
+      if (err) { logError(err); return; }
+      console.log(url);
+      window.open(url);
+    });
+  }
+
+  self.rm = function(app) {
+    console.log('deleting app');
+    ss.rpc('apps.rm', app.name, function(err, res) {
+      if (err) { logError(err); return; }
+      console.log(res);
+      self.refresh();
+    });
+  }
+}
 
 var ProcessesModel = function() {
-  this.items = ko.observableArray();
+  var self = this;
+  self.items = ko.observableArray();
+  self.refresh = function() {
+    ss.rpc('processes.list', function(err, processes) {
+      if (err) { logError(err); return; }
+      console.log('process list received');
+      self.items(processes);
+    });
+  }
+  self.kill = function(process) {
+    console.log('killing process');
+    ss.rpc('processes.kill', process.id, function(err, res) {
+      if (err) { logError(err); return; }
+      console.log(res);
+      self.refresh();
+    });
+  };
+  self.status = function(process) {
+    console.log('status process');
+    ss.rpc('processes.status', process.id, function(err, res) {
+      if (err) { logError(err); return; }
+      console.log(res);
+    });
+  };
+  self.open = function(process) {
+    console.log('opening process');
+    ss.rpc('processes.open', process.id, function(err, url) {
+      if (err) { logError(err); return; }
+      window.open(url);
+    });
+  };
+
 };
 
 var StatsModel = function() {
@@ -59,12 +134,39 @@ var ErrorsModel = function() {
 };
 
 var VersionsModel = function() {
-  this.items = ko.observableArray();
+  var self = this;
+  self.items = ko.observableArray();
+  self.refresh = function () {
+    ss.rpc('system.versions', function(err, versions) {
+      if (err) { logError(err); return; }
+      console.log('versions received');
+      self.items(versions);
+    });
+  }
+
 };
 
 var UserModel = function() {
-  this.username = ko.observable('not logged in');
-  this.pubkey = ko.observable('not available yet');
+  var self = this;
+  self.username = ko.observable('not logged in');
+  self.pubkey = ko.observable('not available yet');
+  self.refreshPubKey = function() {
+    ss.rpc('git.pubkey', function(pubkey) {
+      console.log('current pubkey ' + pubkey);
+      if (pubkey == null) {
+        pubkey = 'not available';
+      }
+      self.pubkey(pubkey);
+    });
+  }
+  self.logout = function() {
+    console.log('logging out');
+    ss.rpc('auth.logout', function(err, res) {
+      if (err) { logError(err); return; }
+      console.log('logged out');
+      self.username('not logged in');
+    });
+  };
 };
 
 var ReposModel = function() {
@@ -74,8 +176,25 @@ var ReposModel = function() {
   self.selectItem = function(item) {
     console.log('selecting ' + item);
     self.selectedItem(item);
-  };
-};
+  }
+
+  self.refresh = function() {
+    ss.rpc('github.repositories', function(err, repos) {
+      if (err) { logError(err); return; }
+      console.log('repositories received');
+      self.items(repos);
+    });
+  }
+
+  self.checkoutRepository = function() {
+    console.log('checking out ' + self.selectedItem().full_name);
+    console.log('using sshurl ' + self.selectedItem().ssh_url);
+    ss.rpc('git.checkout', self.selectedItem().ssh_url, function() {
+      console.log('checkout completed');
+      self.refresh();
+    });
+  }
+}
 
 var model = {
   'versions': new VersionsModel(),
@@ -87,102 +206,7 @@ var model = {
   'errors': new ErrorsModel()
 };
 
-exports.checkoutRepository = function() {
-  console.log('checking out ' + model.repos.selectedItem().full_name);
-  console.log('using sshurl ' + model.repos.selectedItem().ssh_url);
-  ss.rpc('git.checkout', model.repos.selectedItem().ssh_url, function() {
-    console.log('checkout completed');
-    refreshApps();
-  });
-};
-
-exports.logout = function() {
-  console.log('logging out');
-  ss.rpc('auth.logout', function(err, res) {
-    if (err) { logError(err); return; }
-    console.log('logged out');
-    model.user.username('not logged in');
-  });
-};
-
-exports.edit = function(app) {
-  console.log('editing doc');
-  ss.rpc('cloud9.edit', app.name, function(err, url) {
-    if (err) { logError(err); return; }
-    console.log(url);
-    window.open(url);
-
-  });
-};
-
-exports.run = function(app) {
-  console.log('running app ' + app);
-  ss.rpc('apps.run', app.name, function(err, url) {
-    if (err) { logError(err); }
-    if (url) {
-      console.log(url);
-      window.open(url);
-    }
-  });
-};
-
-exports.rm = function(app) {
-  console.log('deleting app');
-  ss.rpc('apps.rm', app.name, function(err, res) {
-    if (err) { logError(err); return; }
-    console.log(res);
-    refreshApps();
-  });
-};
-
-function refreshSystemVersions() {
-  ss.rpc('system.versions', function(err, versions) {
-    if (err) { logError(err); return; }
-    console.log('versions received');
-    model.versions.items(versions);
-  });
-}
-exports.refreshSystemVersions = refreshSystemVersions;
-
-function refreshApps() {
-  ss.rpc('apps.list', function(err, apps) {
-    if (err) { logError(err); return; }
-    console.log('application list received');
-    model.apps.items(apps);
-  });
-}
-exports.refreshApps = refreshApps;
-
-function refreshProcesses() {
-  ss.rpc('apps.processes', function(err, processes) {
-    if (err) { logError(err); return; }
-    console.log('process list received');
-    model.processes.items(processes);
-  });
-}
-exports.refreshProcesses = refreshProcesses;
-
-function refreshRepos() {
-  ss.rpc('github.repositories', function(err, repos) {
-    if (err) { logError(err); return; }
-    console.log('repositories received');
-    model.repos.items(repos);
-
-  });
-}
-exports.refreshRepos = refreshRepos;
-
-function refreshPubKey() {
-  ss.rpc('git.pubkey', function(pubkey) {
-    console.log('current pubkey ' + pubkey);
-    if (pubkey == null) {
-      pubkey = 'not available';
-    }
-    model.user.pubkey(pubkey);
-  });
-}
-exports.refreshPubKey = refreshPubKey;
-
+console.dir(model);
 ss.rpc('auth.current', function(err, username) {
   if (err) { logError(err); return; }
   console.log('current user ' + username);

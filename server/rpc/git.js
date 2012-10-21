@@ -34,7 +34,11 @@ function streamBuffer(data) {
 }
 
 function checkout(repoUrl, username, cb) {
-  sshkeys.getPublicKeyPromise(config.getSshDirectory(username), username, 'github')
+  sshkeys.getPublicKeyPromise(
+    config.getSshDirectory(username),
+    username,
+    'github',
+    config.get('sshPath'))
     .then(
       function(key) {
         return gitmanager.cloneGitPromise(

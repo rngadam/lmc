@@ -41,9 +41,13 @@ exports.actions = function(req, res, ss) {
   //req.use('debug');
   req.use('admin.user.checkAuthenticated');
   return {
+    new: function(appname) {
+      console.log('creating %s', appname)
+    },
     list: function() {
       var data = [];
-      fs.readdir(config.getHomeDirectory(req.session.userId), function(err, files) {
+      var dir = config.getHomeDirectory(req.session.userId);
+      fs.readdir(dir, function(err, files) {
         if (err) {
           res(err);
         } else {
@@ -74,7 +78,8 @@ exports.actions = function(req, res, ss) {
       });
     },
     run: function(appname) {
-      var data = run(config.getCheckoutName(appname, req.session.userId),
+      var checkoutName = config.getCheckoutName(appname, req.session.userId)
+      var data = run(checkoutName,
           function(err, port) {
             if (err && typeof err == 'object') {
               err = err.toString();
@@ -89,17 +94,6 @@ exports.actions = function(req, res, ss) {
           }
           );
     },
-    processes: function() {
-      forkarator.list(function(err, childs) {
-        var data = [];
-        for (var i in childs) {
-          data.push({
-            name: childs[i].id,
-            icon: '/icons/nodejs.svg'
-          });
-        }
-        res(err, data);
-      });
-    }
+
   };
 };

@@ -40,9 +40,9 @@
 	<div class="navbar-inner">
 		<ul class="nav nav-tabs">
 			<a class="brand" href="http://lophilo.com" target="new">Lophilo</a>
-			<li><a href="#system" data-placement="bottom" data-toggle="tab" rel="tooltip" title="This is the system tab with some versioning and status information" data-bind="click: require('/mc.js').refreshSystemVersions">System</a></li>
-			<li><a href="#editing" data-toggle="tab" rel="tooltip" title="Existing apps and the ability to create new ones with Cloud9" data-bind="click: require('/mc.js').refreshApps">Applications</a></li>
-			<li><a href="#processes" data-toggle="tab" rel="tooltip" title="Running processes" data-bind="click: require('/mc.js').refreshProcesses">Processes</a></li>
+			<li><a href="#system" data-placement="bottom" data-toggle="tab" rel="tooltip" title="This is the system tab with some versioning and status information" data-bind="click: versions.refresh">System</a></li>
+			<li><a href="#editing" data-toggle="tab" rel="tooltip" title="Existing apps and the ability to create new ones with Cloud9" data-bind="click: apps.refresh">Applications</a></li>
+			<li><a href="#processes" data-toggle="tab" rel="tooltip" title="Running processes" data-bind="click: processes.refresh">Processes</a></li>
 			<li><a href="#settings" data-toggle="tab" rel="tooltip" title="General system settings (security, services, accounts)">Settings</a></li>
 			<li class="dropdown">
 			  <a class="dropdown-toggle" data-toggle="dropdown" href="#">
@@ -65,7 +65,7 @@
 			    	<a tabindex="-1" href="/auth/github">Login with Github</a>
 			    </li>
 			    <li>
-			    	<a href="#pubkey" tabindex="-1" data-toggle="modal" data-bind="click: require('/mc.js').refreshPubKey">Github public key</a>
+			    	<a href="#pubkey" tabindex="-1" data-toggle="modal" data-bind="click: user.refreshPubKey">Github public key</a>
 			    </li>
 			    <li>
 			    	<a tabindex="-1" href="" data-bind="click: require('/mc.js').logout">Logout</a>
@@ -117,13 +117,13 @@
 
 	  </div>
 
-	  <div class="tab-pane fade" id="editing"  data-bind="with: apps">
+	  <div class="tab-pane fade" id="editing">
 	  	<div class="well">Editing and creating Lophilo applications</div>
 			<ul class="thumbnails">
 				<div>
 					<li class="span2">
 						<div class="thumbnail">
-						  	<a href="#new-app" role="button" class="btn" data-toggle="modal" data-bind="click: require('/mc.js').refreshRepos">
+						  	<a href="#new-app" role="button" class="btn" data-toggle="modal">
 						  		<img src="/icons/list-add.svg" alt="Add a new application" width=128 height=128>
 						  	</a>
 						 	<center>
@@ -135,7 +135,7 @@
 				<div>
 					<li class="span2">
 						<div class="thumbnail">
-						  	<a href="#checkout-app" role="button" class="btn" data-toggle="modal" data-bind="click: require('/mc.js').refreshRepos">
+						  	<a href="#checkout-app" role="button" class="btn" data-toggle="modal" data-bind="click: repos.refresh">
 						  		<img src="/icons/list-add.svg" alt="Checkout an existing app" width=128 height=128>
 						  	</a>
 						 	<center>
@@ -144,10 +144,11 @@
 						</div>
 					</li>
 				</div>
-				<!-- ko foreach: items -->
+
+				<!-- ko foreach: apps.items -->
 				<li class="span2">
 					<div class="thumbnail">
-					  	<a href="" data-bind="click: require('/mc.js').run" role="button" class="btn" data-toggle="modal">
+					  	<a href="" data-bind="click: $parent.apps.run" role="button" class="btn" data-toggle="modal">
 					  		<img data-bind="attr: {src: icon}" alt="test" width=128 height=128>
 					  	</a>
 					 	<center>
@@ -161,8 +162,8 @@
 					 			<i class="icon-trash">X</i>
 					 		</a>
 					 		-->
-					 		<a class="btn btn-small" href="#" data-bind="click: require('/mc.js').edit">E</a>
-					 		<a class="btn btn-small" href="#" data-bind="	click: require('/mc.js').rm">X</a>
+					 		<a class="btn btn-small" href="#" data-bind="click: $parent.apps.edit">E</a>
+					 		<a class="btn btn-small" href="#" data-bind="click: $parent.apps.rm">X</a>
 					 		</p>
 					 	</center>
 					</div>
@@ -177,14 +178,14 @@
 				<!-- ko foreach: items -->
 				<li class="span2">
 					<div class="thumbnail">
-					  	<a href="" data-bind="click: require('/mc.js').run" role="button" class="btn" data-toggle="modal">
+					  	<a href="" data-bind="click: $parent.status" role="button" class="btn" data-toggle="modal">
 					  		<img data-bind="attr: {src: icon}" alt="Running process" width=128 height=128>
 					  	</a>
 					 	<center>
 					 		<span data-bind="text: name"></span>
 					 		<p>
-					 		<a class="btn btn-small" href="#" data-bind="click: require('/mc.js').edit">L</a>
-					 		<a class="btn btn-small" href="#" data-bind="click: require('/mc.js').rm">X</a>
+					 		<a class="btn btn-small" href="#" data-bind="click: $parent.open">O</a>
+					 		<a class="btn btn-small" href="#" data-bind="click: $parent.kill">X</a>
 					 		</p>
 					 	</center>
 					</div>
@@ -248,28 +249,30 @@
 <!-- ################################## -->
 <!-- Dialog to create a new application -->
 <!-- ################################## -->
-<div class="modal hide" id="new-app" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-    <h3 id="myModalLabel">New Application Wizard</h3>
-  </div>
-  <div class="modal-body" data-bind="with: repos">
-	<form>
-	  <label>Application name</label>
-	  <input type="text" placeholder="Type a name...">
-	  <label>Github repository name</label>
-	  <input type="text" placeholder="Type a repository name...">
-	  <span class="help-block">should be a valid git repository name</span>
-	  <label class="checkbox">
-	    <input type="checkbox"> Add Socketstream template
-	  </label>
-	</form>
-  </div> <!-- modal-body -->
+<div class="modal hide" id="new-app" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-bind="with: apps">
+  <form id="modal-form" class="modal-form" data-bind="submit: createApp">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+        <h3 id="myModalLabel">New Application Wizard</h3>
+      </div>
+      <div class="modal-body">
 
-  <div class="modal-footer">
-    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-    <button class="btn btn-primary" data-bind="click: require('/mc.js').checkoutRepository" data-dismiss="modal">Create</button>
-  </div>
+    	  <label>Application name</label>
+    	  <input type="text" data-bind="value: name" placeholder="Type a name...">
+          <!--
+    	  <label>Github repository name</label>
+    	  <input type="text" placeholder="Type a repository name...">
+    	  <span class="help-block">should be a valid git repository name</span>
+    	  <label class="checkbox">
+    	    <input type="checkbox"> Add Socketstream template
+    	  </label>
+           -->
+      </div> <!-- modal-body -->
+      <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+        <button type="submit" class="btn btn-primary">Create</button>
+      </div> <!-- modal-footer -->
+  </form>
 </div>
 
 <!-- ################################## -->
@@ -288,7 +291,7 @@
 
   <div class="modal-footer">
     <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-    <button class="btn btn-primary" data-bind="click: require('/mc.js').checkoutRepository" data-dismiss="modal">Checkout</button>
+    <button class="btn btn-primary" data-bind="click: repos.checkoutRepository" data-dismiss="modal">Checkout</button>
   </div>
 </div>
 <!-- ################################## -->

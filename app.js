@@ -28,9 +28,7 @@ var assert = require('assert');
 var localconfigs = require('ss-localconfigs');
 
 var path = require('path');
-var config = require('./config.js');
-
-config.setTarget('local.host', 3000);
+var config = require(path.join(__dirname, 'config.js'));
 
 everyauth.github
   .appId(config.get('clientId'))

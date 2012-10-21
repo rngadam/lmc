@@ -2,6 +2,7 @@
 
 var fs = require('fs');
 var path = require('path');
+var sysconfig = require('../../config.js');
 
 function IdeConfigException(message) {
   this.name = 'IdeConfigException';
@@ -217,7 +218,7 @@ function getConfig(cloud9Dirname, projectDir, ip, port) {
     './cloud9.ide.auth',
     {
       packagePath: './cloud9.ide.git',
-      sshPath: '/home/lophilo/lophilo/lmc/ssh'
+      sshPath: sysconfig.get('sshPath'),
     },
     './cloud9.ide.gittools',
     //"./cloud9.ide.hg",

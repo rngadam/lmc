@@ -24,10 +24,12 @@
 
 var path = require('path');
 var fs = require('fs');
+var assert = require('assert');
 
 var INSTALL_DIR = path.resolve('.', path.join(__dirname, '..'));
 var LMC_DIR = __dirname;
 var USERS_DIR = path.join(LMC_DIR, 'users');
+var SSH_PATH = path.join(LMC_DIR, 'ssh');
 
 // sample config file (do not check in github!)
 // {
@@ -39,19 +41,29 @@ var USERS_DIR = path.join(LMC_DIR, 'users');
 //   "entryPath": "/auth/github",
 //   "callbackPath": "/auth/github/callback",
 // }
-var configs = JSON.parse(fs.readFileSync(path.join(__dirname, 'config.json')));
-var currentConfig;
+var currentConfig = null;
 
-function setTarget(hostname, port) {
-  for (var i in configs) {
-    if (hostname == configs[i].hostname && port == configs[i].port) {
-      currentConfig = configs[i];
+function addAdditionalConfig(config) {
+  config['sshPath'] = SSH_PATH;
+}
+
+function init() {
+  var config = JSON.parse(fs.readFileSync(path.join(__dirname, 'config.json')));
+  var hostname = config.target.hostname;
+  var port = config.target.port;
+  assert(hostname, "target hostname must be set in configuration");
+  assert(port, "target port must be set in configuration");
+  for (var i in config.configs) {
+    if (hostname == config.configs[i].hostname && port == config.configs[i].port) {
+      currentConfig = config.configs[i];
+      addAdditionalConfig(currentConfig);
       return;
     }
   }
   throw new Error('configuration not found for hostname ' + hostname);
 }
-exports.setTarget = setTarget;
+
+init();
 
 function get(key) {
   return currentConfig[key];
