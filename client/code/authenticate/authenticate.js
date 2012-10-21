@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 /*
  * SocketStream application application Management Console for Lophilo
  *
@@ -28,10 +28,10 @@ console.log('authenticate loading');
 
 var user = ss.rpc('auth.current', function(response) {
   var html = ss.tmpl['login'].render({
-    title: "Lophilo",
+    title: 'Lophilo',
     user: response,
-    methods: ["github"]    
+    methods: ['github']
   });
   console.log(html);
-  $("#dashboard").html(html);
+  $('#dashboard').html(html);
 });

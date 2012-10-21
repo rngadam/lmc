@@ -30,56 +30,56 @@ var config = require('../../config.js');
 
 
 function streamBuffer(data) {
-	console.log('LOG: ' + data);
+  console.log('LOG: ' + data);
 }
 
 function checkout(repoUrl, username, cb) {
-	sshkeys.getPublicKeyPromise(config.getSshDirectory(username), username, 'github')
-		.then(
-			function(key) {
-				return gitmanager.cloneGitPromise(
-					repoUrl, config.getCheckoutName(repoUrl, username), key);
-			}
-		).then(
-			function() {
-				cb(null, true);
-			}
-		).fail(
-			function(err) {
-				cb(err);
-			}
-		);
+  sshkeys.getPublicKeyPromise(config.getSshDirectory(username), username, 'github')
+    .then(
+      function(key) {
+        return gitmanager.cloneGitPromise(
+            repoUrl, config.getCheckoutName(repoUrl, username), key);
+      }
+      ).then(
+      function() {
+        cb(null, true);
+      }
+      ).fail(
+      function(err) {
+        cb(err);
+      }
+      );
 }
 
 exports.actions = function(req, res, ss) {
-	req.use('session');
-	req.use('debug');
-	req.use('admin.user.checkAuthenticated');
-	return {
-		// takes in full repo URL and checks it out
-		// using the ssh key
-		checkout: function(repoUrl) {
-			checkout(repoUrl, req.session.userId, function(err) {
-				if (err) {
-					res('Error: could not checkout repository: ' + err.stack);
-				} else {
-					res('Repository has been checked out ' + repoUrl);
-				}
-			});
-		},
-		// returns pubkey value (creates it if not available)
-		pubkey: function() {
-		  sshkeys.getPublicKey(
-		  	config.getSshDirectory(req.session.userId),
-		  	'github',
-		  	function(err, key) {
-		  	if (err) {
-		  		// publish error err
-		  		res(null);
-		  	} else {
-		  		res(key);
-		  	}
-		  });
-		}
-	};
+  req.use('session');
+  req.use('debug');
+  req.use('admin.user.checkAuthenticated');
+  return {
+    // takes in full repo URL and checks it out
+    // using the ssh key
+    checkout: function(repoUrl) {
+      checkout(repoUrl, req.session.userId, function(err) {
+        if (err) {
+          res('Error: could not checkout repository: ' + err.stack);
+        } else {
+          res('Repository has been checked out ' + repoUrl);
+        }
+      });
+    },
+    // returns pubkey value (creates it if not available)
+    pubkey: function() {
+      sshkeys.getPublicKey(
+          config.getSshDirectory(req.session.userId),
+          'github',
+          function(err, key) {
+            if (err) {
+              // publish error err
+              res(null);
+            } else {
+              res(key);
+            }
+          });
+    }
+  };
 };

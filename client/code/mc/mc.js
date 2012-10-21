@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 /*
  * SocketStream application application Management Console for Lophilo
  *
@@ -27,179 +27,179 @@
 console.log('mc loading');
 
 
-var AppsModel = function () {
-    this.items = ko.observableArray();
+var AppsModel = function() {
+  this.items = ko.observableArray();
 };
 
-var ProcessesModel = function () {
-    this.items = ko.observableArray();
+var ProcessesModel = function() {
+  this.items = ko.observableArray();
 };
 
 var StatsModel = function() {
-    this.process = ko.observable();
-    this.system = ko.observable();
-    this.processDisplay = ko.computed(function() {
-        return Math.round(this.process()) + "s";
-    }, this),
-    this.systemDisplay = ko.computed(function() {;
-        return Math.round(this.system()) + "s";
-    }, this)
+  this.process = ko.observable();
+  this.system = ko.observable();
+  this.processDisplay = ko.computed(function() {
+    return Math.round(this.process()) + 's';
+  }, this),
+  this.systemDisplay = ko.computed(function() {;
+    return Math.round(this.system()) + 's';
+  }, this);
 };
 
 var ErrorsModel = function() {
-    this.items = ko.observableArray();
-    this.latest = ko.computed(function() {
-        if(this.items().length > 0) {
-            var last = this.items()[this.items().length-1];
-            console.log("last error: " + console.dir(last));
-            return last;
-        }
-        return "No error!";
-    }, this)
+  this.items = ko.observableArray();
+  this.latest = ko.computed(function() {
+    if (this.items().length > 0) {
+      var last = this.items()[this.items().length - 1];
+      console.log('last error: ' + console.dir(last));
+      return last;
+    }
+    return 'No error!';
+  }, this);
 };
 
 var VersionsModel = function() {
-    this.items = ko.observableArray();
+  this.items = ko.observableArray();
 };
 
 var UserModel = function() {
-    this.username = ko.observable("not logged in");
-    this.pubkey = ko.observable("not available yet");
+  this.username = ko.observable('not logged in');
+  this.pubkey = ko.observable('not available yet');
 };
 
 var ReposModel = function() {
-    var self = this;
-    self.items = ko.observableArray();
-    self.selectedItem = ko.observable();
-    self.selectItem = function(item) {
-        console.log('selecting ' + item);
-        self.selectedItem(item);
-    }
+  var self = this;
+  self.items = ko.observableArray();
+  self.selectedItem = ko.observable();
+  self.selectItem = function(item) {
+    console.log('selecting ' + item);
+    self.selectedItem(item);
+  };
 };
 
 var model = {
-    'versions': new VersionsModel(),
-    'apps': new AppsModel(),
-    'processes': new ProcessesModel(),
-    'stats': new StatsModel(),
-    'repos': new ReposModel(),
-    'user': new UserModel(),
-    'errors': new ErrorsModel()
+  'versions': new VersionsModel(),
+  'apps': new AppsModel(),
+  'processes': new ProcessesModel(),
+  'stats': new StatsModel(),
+  'repos': new ReposModel(),
+  'user': new UserModel(),
+  'errors': new ErrorsModel()
 };
 
-exports.checkoutRepository  = function() {
-    console.log('checking out ' + model.repos.selectedItem().full_name);
-    console.log('using sshurl ' + model.repos.selectedItem().ssh_url);
-    ss.rpc('git.checkout', model.repos.selectedItem().ssh_url, function() {
-        console.log('checkout completed');
-        refreshApps();
-    });
-}
+exports.checkoutRepository = function() {
+  console.log('checking out ' + model.repos.selectedItem().full_name);
+  console.log('using sshurl ' + model.repos.selectedItem().ssh_url);
+  ss.rpc('git.checkout', model.repos.selectedItem().ssh_url, function() {
+    console.log('checkout completed');
+    refreshApps();
+  });
+};
 
 exports.logout = function() {
-    console.log('logging out');
-    ss.rpc('auth.logout', function(err, res) {
-        if(err) { logError(err); return; }
-        console.log('logged out');
-        model.user.username("not logged in");
-    });
-}
+  console.log('logging out');
+  ss.rpc('auth.logout', function(err, res) {
+    if (err) { logError(err); return; }
+    console.log('logged out');
+    model.user.username('not logged in');
+  });
+};
 
 exports.edit = function(app) {
-    console.log('editing doc');
-    ss.rpc('cloud9.edit', app.name, function(err, url) {
-        if(err) { logError(err); return; }
-        console.log(url);
-        window.open(url);
+  console.log('editing doc');
+  ss.rpc('cloud9.edit', app.name, function(err, url) {
+    if (err) { logError(err); return; }
+    console.log(url);
+    window.open(url);
 
-    });
-}
+  });
+};
 
 exports.run = function(app) {
-    console.log('running app ' + app);
-    ss.rpc('apps.run', app.name, function(err, url) {
-        if(err) { logError(err); }
-        if(url) {
-            console.log(url);
-            window.open(url);
-        }
-    });
-}
+  console.log('running app ' + app);
+  ss.rpc('apps.run', app.name, function(err, url) {
+    if (err) { logError(err); }
+    if (url) {
+      console.log(url);
+      window.open(url);
+    }
+  });
+};
 
 exports.rm = function(app) {
-    console.log('deleting app');
-    ss.rpc('apps.rm', app.name, function(err, res) {
-        if(err) { logError(err); return; }
-        console.log(res);
-        refreshApps();
-    });
-}
+  console.log('deleting app');
+  ss.rpc('apps.rm', app.name, function(err, res) {
+    if (err) { logError(err); return; }
+    console.log(res);
+    refreshApps();
+  });
+};
 
 function refreshSystemVersions() {
-    ss.rpc('system.versions', function(err, versions) {
-        if(err) { logError(err); return; }
-        console.log("versions received");
-        model.versions.items(versions);
-    });
+  ss.rpc('system.versions', function(err, versions) {
+    if (err) { logError(err); return; }
+    console.log('versions received');
+    model.versions.items(versions);
+  });
 }
 exports.refreshSystemVersions = refreshSystemVersions;
 
 function refreshApps() {
-    ss.rpc('apps.list', function(err, apps) {
-        if(err) { logError(err); return; }
-        console.log("application list received");
-        model.apps.items(apps);
-    });
+  ss.rpc('apps.list', function(err, apps) {
+    if (err) { logError(err); return; }
+    console.log('application list received');
+    model.apps.items(apps);
+  });
 }
 exports.refreshApps = refreshApps;
 
 function refreshProcesses() {
-    ss.rpc('apps.processes', function(err, processes) {
-        if(err) { logError(err); return; }
-        console.log("process list received");
-        model.processes.items(processes);
-    });
+  ss.rpc('apps.processes', function(err, processes) {
+    if (err) { logError(err); return; }
+    console.log('process list received');
+    model.processes.items(processes);
+  });
 }
 exports.refreshProcesses = refreshProcesses;
 
 function refreshRepos() {
-    ss.rpc('github.repositories', function(err, repos) {
-        if(err) { logError(err); return; }
-        console.log("repositories received");
-        model.repos.items(repos);
+  ss.rpc('github.repositories', function(err, repos) {
+    if (err) { logError(err); return; }
+    console.log('repositories received');
+    model.repos.items(repos);
 
-    });
+  });
 }
 exports.refreshRepos = refreshRepos;
 
 function refreshPubKey() {
-    ss.rpc('git.pubkey', function(pubkey) {
-        console.log('current pubkey ' + pubkey);
-        if(pubkey == null) {
-            pubkey = "not available";
-        }
-        model.user.pubkey(pubkey);
-    });
+  ss.rpc('git.pubkey', function(pubkey) {
+    console.log('current pubkey ' + pubkey);
+    if (pubkey == null) {
+      pubkey = 'not available';
+    }
+    model.user.pubkey(pubkey);
+  });
 }
 exports.refreshPubKey = refreshPubKey;
 
 ss.rpc('auth.current', function(err, username) {
-    if(err) { logError(err); return; }
-    console.log('current user ' + username);
-    if(username == null) {
-        username = "not logged in";
-    }
-    model.user.username(username);
+  if (err) { logError(err); return; }
+  console.log('current user ' + username);
+  if (username == null) {
+    username = 'not logged in';
+  }
+  model.user.username(username);
 });
 
 function logError(err) {
-    console.log('LOGGING:' + err);
-    try {
-        model.errors.items.push({errstring: "" + err});
-        $('#alert-dialog').show();
-    } catch(err) {
-        console.log('error in the error handler! ' + err.stack);
-    }
+  console.log('LOGGING:' + err);
+  try {
+    model.errors.items.push({errstring: '' + err});
+    $('#alert-dialog').show();
+  } catch (err) {
+    console.log('error in the error handler! ' + err.stack);
+  }
 }
 
 ko.applyBindings(model);
@@ -207,18 +207,18 @@ ko.applyBindings(model);
 var myvalues = [];
 
 function update() {
-    ss.rpc('system.loadavg', function(err, res) {
-        if(err) { logError(err); return; }
-        myvalues.push(res.one);
-        if(myvalues.length > 10)
-          myvalues.shift();
-        $('.dynamicsparkline').sparkline(myvalues);
-    });
-    ss.rpc('system.uptime', function(err, res) {
-        if(err) { logError(err); return; }
-    	model.stats.process(res.process);
-    	model.stats.system(res.system);
-    });
+  ss.rpc('system.loadavg', function(err, res) {
+    if (err) { logError(err); return; }
+    myvalues.push(res.one);
+    if (myvalues.length > 10)
+      myvalues.shift();
+    $('.dynamicsparkline').sparkline(myvalues);
+  });
+  ss.rpc('system.uptime', function(err, res) {
+    if (err) { logError(err); return; }
+    model.stats.process(res.process);
+    model.stats.system(res.system);
+  });
 }
 
 clearInterval(update);

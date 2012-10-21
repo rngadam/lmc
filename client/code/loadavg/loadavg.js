@@ -7,8 +7,8 @@ function createLoadGauge(id) {
 	myGauge.id = id; // Link the new jGauge to the placeholder DIV.
 	myGauge.autoPrefix = autoPrefix.si; // Use SI prefixing (i.e. 1k = 1000).
 	myGauge.imagePath = 'img/jgauge_face_taco.png';
-	myGauge.segmentStart = -225
-	myGauge.segmentEnd = 45
+	myGauge.segmentStart = -225;
+	myGauge.segmentEnd = 45;
 	myGauge.width = 170;
 	myGauge.height = 170;
 	myGauge.needle.imagePath = 'img/jgauge_needle_taco.png';
@@ -16,8 +16,8 @@ function createLoadGauge(id) {
 	myGauge.needle.yOffset = 0;
 	myGauge.label.yOffset = 55;
 	myGauge.label.color = '#fff';
-	myGauge.label.precision = 1; 
-	myGauge.label.suffix = ''; 
+	myGauge.label.precision = 1;
+	myGauge.label.suffix = '';
 	myGauge.ticks.labelRadius = 45;
 	myGauge.ticks.labelColor = '#0ce';
 	myGauge.ticks.start = 0.1;
@@ -25,8 +25,8 @@ function createLoadGauge(id) {
 	myGauge.ticks.count = 7;
 	myGauge.ticks.color = 'rgba(0, 0, 0, 0)';
 	myGauge.range.color = 'rgba(0, 0, 0, 0)';
-	return myGauge;							
-}	
+	return myGauge;
+}
 
 function updateGauge() {
 	ss.rpc('system.loadavg', function(res) {
@@ -35,7 +35,7 @@ function updateGauge() {
 		fifteen.setValue(res.fifteen);
 	});
 }
-	
+
 var one = createLoadGauge('one');
 var five = createLoadGauge('five');
 var fifteen = createLoadGauge('fifteen');

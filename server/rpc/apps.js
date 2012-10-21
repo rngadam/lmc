@@ -75,19 +75,19 @@ exports.actions = function(req, res, ss) {
     },
     run: function(appname) {
       var data = run(config.getCheckoutName(appname, req.session.userId),
-        function(err, port) {
-          if (err && typeof err == 'object') {
-            err = err.toString();
+          function(err, port) {
+            if (err && typeof err == 'object') {
+              err = err.toString();
+            }
+            var url;
+            if (port) { // if the error is already started, the port is still valid
+              url = config.createURL(port);
+            } else {
+              url = null;
+            }
+            res(err, url);
           }
-          var url;
-          if (port) { // if the error is already started, the port is still valid
-            url = config.createURL(port);
-          } else {
-            url = null;
-          }
-          res(err, url);
-        }
-      );
+          );
     },
     processes: function() {
       forkarator.list(function(err, childs) {

@@ -9,11 +9,11 @@ function sketchProc(processing) {
     var centerX = processing.width / 2, centerY = processing.height / 2;
     var maxArmLength = Math.min(centerX, centerY);
 
-    function drawArm(position, lengthScale, weight) {      
+    function drawArm(position, lengthScale, weight) {
       processing.strokeWeight(weight);
-      processing.line(centerX, centerY, 
-        centerX + Math.sin(position * 2 * Math.PI) * lengthScale * maxArmLength,
-        centerY - Math.cos(position * 2 * Math.PI) * lengthScale * maxArmLength);
+      processing.line(centerX, centerY,
+          centerX + Math.sin(position * 2 * Math.PI) * lengthScale * maxArmLength,
+          centerY - Math.cos(position * 2 * Math.PI) * lengthScale * maxArmLength);
     }
 
     // erase background
@@ -33,8 +33,8 @@ function sketchProc(processing) {
     var secondsPosition = now.getSeconds() / 60;
     drawArm(secondsPosition, 0.90, 1);
   };
-  
+
 }
 
 // attaching the sketchProc function to the canvas
-var p = new Processing("processingCanvas", sketchProc);
+var p = new Processing('processingCanvas', sketchProc);

@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 /*
  * checkout and configure git repositories
@@ -43,65 +43,65 @@ var configs = JSON.parse(fs.readFileSync(path.join(__dirname, 'config.json')));
 var currentConfig;
 
 function setTarget(hostname, port) {
-    for(var i in configs) {
-        if(hostname == configs[i].hostname && port == configs[i].port) {
-            currentConfig = configs[i];
-            return;
-        }
+  for (var i in configs) {
+    if (hostname == configs[i].hostname && port == configs[i].port) {
+      currentConfig = configs[i];
+      return;
     }
-    throw new Error('configuration not found for hostname ' + hostname);
+  }
+  throw new Error('configuration not found for hostname ' + hostname);
 }
 exports.setTarget = setTarget;
 
 function get(key) {
-    return currentConfig[key];
+  return currentConfig[key];
 }
 exports.get = get;
 
 function getInstallDir() {
-    return INSTALL_DIR;
+  return INSTALL_DIR;
 }
 exports.getInstallDir = getInstallDir;
 
 function getNodePath() {
-    return '/usr/local/bin/node';
+  return '/usr/local/bin/node';
 }
 exports.getNodePath = getNodePath;
 
 function getCloud9Path() {
-    return path.join(getInstallDir(), 'cloud9');
+  return path.join(getInstallDir(), 'cloud9');
 }
 exports.getCloud9Path = getCloud9Path;
 
 function getCloud9ScriptRelativePath() {
-    return './bin/cloud9.sh';
+  return './bin/cloud9.sh';
 }
 exports.getCloud9ScriptRelativePath = getCloud9ScriptRelativePath;
 
-function getHomeDirectory (username) {
-	return path.join(USERS_DIR, username);
+function getHomeDirectory(username) {
+  return path.join(USERS_DIR, username);
 }
 exports.getHomeDirectory = getHomeDirectory;
 
 function getSshDirectory(username) {
-	return path.join(getHomeDirectory(), '.ssh');
+  return path.join(getHomeDirectory(), '.ssh');
 }
 exports.getSshDirectory = getSshDirectory;
 
 function getCheckoutName(repoUrl, username) {
-    var index = repoUrl.lastIndexOf('/');
-    var checkoutName;
-    if(index>0) {
-       checkoutName = repoUrl.slice(index+1);
-    } else {
-        checkoutName = repoUrl;
-    }
+  var index = repoUrl.lastIndexOf('/');
+  var checkoutName;
+  if (index > 0) {
+    checkoutName = repoUrl.slice(index + 1);
+  } else {
+    checkoutName = repoUrl;
+  }
 
-    return path.join(getHomeDirectory(username), checkoutName)
+  return path.join(getHomeDirectory(username), checkoutName);
 }
 exports.getCheckoutName = getCheckoutName;
 
 function createURL(port) {
-    return 'http://' + get('hostname') + ':' + port
+  return 'http://' + get('hostname') + ':' + port;
 }
 exports.createURL = createURL;

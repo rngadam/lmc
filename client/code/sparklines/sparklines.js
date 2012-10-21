@@ -9,7 +9,7 @@ var myvalues = [];
 function updateGauge() {
   ss.rpc('system.loadavg', function(res) {
     myvalues.push(res.one);
-    if(myvalues.length > 60)
+    if (myvalues.length > 60)
       myvalues.shift();
     $('.dynamicsparkline').sparkline(myvalues);
   });

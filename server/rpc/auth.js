@@ -37,19 +37,19 @@ exports.actions = function(req, res, ss) {
       console.log(arguments);
       var pam = require('authenticate-pam');
       pam.authenticate(username, password, function(err, user) {
-          console.log(arguments);
-          if (err) {
-            console.log(err);
+        console.log(arguments);
+        if (err) {
+          console.log(err);
+        }
+        else {
+          console.log('Authenticated!');
+          if (user) {
+            req.session.setUserId(user.id);
+            res(null, true);
+          } else {
+            res('Access denied!');
           }
-          else {
-            console.log('Authenticated!');
-            if (user) {
-              req.session.setUserId(user.id);
-              res(null, true);
-            } else {
-              res('Access denied!');
-            }
-          }
+        }
       }, {serviceName: 'lmc', remoteHost: 'localhost'});
     },
 

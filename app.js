@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 /*
  * SocketStream application application Management Console for Lophilo
  *
@@ -38,20 +38,20 @@ everyauth.github
   .entryPath(config.get('entryPath'))
   .callbackPath(config.get('callbackPath'))
   .scope('repo')
-  .findOrCreateUser( function (session, accessToken, accessTokenExtra, githubUserMetadata) {
-    session.oauth = accessToken;
-    session.userId = githubUserMetadata.login;
-    session.save();
-    return session.userId;
-  })
+  .findOrCreateUser(function(session, accessToken, accessTokenExtra, githubUserMetadata) {
+      session.oauth = accessToken;
+      session.userId = githubUserMetadata.login;
+      session.save();
+      return session.userId;
+    })
   .redirectPath('/');
 
 ss.http.middleware.prepend(ss.http.connect.bodyParser());
 ss.http.middleware.append(everyauth.middleware());
 
 localconfigs.applyConfigs(
-  ss,
-  path.join(__dirname, 'client/code'), '.socketstream.json');
+    ss,
+    path.join(__dirname, 'client/code'), '.socketstream.json');
 
 // Code Formatters
 ss.client.formatters.add(require('ss-stylus'));
