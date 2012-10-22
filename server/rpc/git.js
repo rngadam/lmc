@@ -32,27 +32,37 @@ function streamBuffer(data) {
 }
 
 function checkout(repoUrl, username, cb) {
+  var cloneName = config.getCheckoutName(repoUrl, username);
+  var sshPath = config.get('sshPath');
   var sshDir = config.getSshDirectory(username);
-  var publicKey = sshkeys.getPublicKeyPromise(sshDir, 'github');
 
-  publicKey.then(
-    function(key) {
-      return gitmanager.cloneGitPromise(
-          repoUrl,
-          config.getCheckoutName(repoUrl, username),
-          key,
-          config.get('sshPath'));
+  // we won't use it, but we want to make sure the key exist...
+  sshkeys.getPublicKeyPromise(sshDir, 'github').then(
+    function() {
+      return gitmanager.clonePromise(
+        repoUrl,
+        cloneName,
+        sshPath
+      );
     }
   ).then(
     function() {
-      cb(null, true);
+      var sshPrivateKeyPath = path.join(sshDir, 'github');
+      return gitmanager.configPromise(cloneName, sshPrivateKeyPath);
+    }
+  ).then(
+    function() {
+      cb(null, 'successfully checked out ' + repoUrl);
     }
   ).fail(
     function(err) {
+      console.log('TEST FAILED ' + err);
       cb(err);
+
     }
   );
 }
+exports.checkout = checkout;
 
 exports.actions = function(req, res, ss) {
   req.use('session');

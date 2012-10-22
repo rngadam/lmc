@@ -8,18 +8,14 @@ var path = require('path');
 describe('config', function() {
   describe('#getInstallDir', function() {
     it('correct install dir', function() {
-      config.getInstallDir().should.eql(path.resolve('..'));
+      var installDirExpected = path.resolve(path.join(__dirname, '..', '..'));
+      console.log('should be ' + installDirExpected);
+      config.getInstallDir().should.eql(installDirExpected);
     });
   });
   describe('#get', function() {
     it('valid config return expected values', function() {
-      config.setTarget('lophilo.local', 80);
-      config.get('internalPort').should.eql(8080);
-    });
-    it('unavailable host throws', function() {
-      (function() {
-        config.setHostname('lophilo.com', 80);
-      }).should.throw(/configuration not found/);
+      config.get('internalPort').should.eql(3000);
     });
   });
 });

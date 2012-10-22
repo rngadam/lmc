@@ -33,10 +33,8 @@ var github = new GitHubApi({
 assert(github, "Can't load Github API");
 
 exports.actions = function(req, res, ss) {
-  // Easily debug incoming requests here
-  //console.log(req);
   req.use('session');
-  req.use('debug');
+  //req.use('debug');
   req.use('admin.user.checkAuthenticated');
   return {
     repositories: function() {

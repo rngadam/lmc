@@ -26,7 +26,7 @@ var path = require('path');
 var fs = require('fs');
 var assert = require('assert');
 
-var INSTALL_DIR = path.resolve('.', path.join(__dirname, '..'));
+var INSTALL_DIR = path.resolve(path.join(__dirname, '..'));
 var LMC_DIR = __dirname;
 var USERS_DIR = path.join(LMC_DIR, 'users');
 var SSH_PATH = path.join(LMC_DIR, 'ssh');
@@ -66,6 +66,7 @@ function init() {
 init();
 
 function get(key) {
+  assert(key, 'valid key required');
   return currentConfig[key];
 }
 exports.get = get;
@@ -91,16 +92,19 @@ function getCloud9ScriptRelativePath() {
 exports.getCloud9ScriptRelativePath = getCloud9ScriptRelativePath;
 
 function getHomeDirectory(username) {
+  assert(username, 'valid username required');
   return path.join(USERS_DIR, username);
 }
 exports.getHomeDirectory = getHomeDirectory;
 
 function getSshDirectory(username) {
-  return path.join(getHomeDirectory(), '.ssh');
+  assert(username, 'valid username required');
+  return path.join(getHomeDirectory(username), '.ssh');
 }
 exports.getSshDirectory = getSshDirectory;
 
 function getCheckoutName(repoUrl, username) {
+  assert(username, 'valid username required');
   var index = repoUrl.lastIndexOf('/');
   var checkoutName;
   if (index > 0) {
@@ -114,6 +118,7 @@ function getCheckoutName(repoUrl, username) {
 exports.getCheckoutName = getCheckoutName;
 
 function createURL(port) {
+  assert(port, 'valid port required');
   return 'http://' + get('hostname') + ':' + port;
 }
 exports.createURL = createURL;

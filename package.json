@@ -1,11 +1,14 @@
 {
-  "name": "sstest",
-  "description": "An awesome real time application",
+  "name": "lmc",
+  "description": "Lophilo Management Console",
   "version": "0.0.1",
-  "author": "Me <me@mydomain.com>",
+  "author": "Ricky Ng-Adam <rngadam@lophilo.com>",
   "private": true,
   "engines": {
-    "node": ">= 0.6.0"
+    "node": ">= 0.8.0"
+  },
+  "scripts": {
+    "test": "node_modules/.bin/mocha test"
   },
   "dependencies": {
     "socketstream": "0.3.x",
@@ -20,7 +23,10 @@
     "redis": "~0.8.1",
     "q": "~0.8.8",
     "mkdirp": "~0.3.4",
-    "q-fs": "~0.1.32"
+    "q-fs": "~0.1.32",
     "ss-localconfigs": "0.0.x"
+  },
+  "devDependencies": {
+   "mocha": "1.6.x"
   }
 }
