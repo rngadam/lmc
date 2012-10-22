@@ -151,6 +151,10 @@ var ErrorsModel = function() {
   }, this);
 };
 
+var StatusModel = function() {
+  this.connected = ko.observable(true);
+};
+
 var VersionsModel = function() {
   var self = this;
   self.items = ko.observableArray();
@@ -233,7 +237,8 @@ var model = {
   'stats': new StatsModel(),
   'repos': new ReposModel(),
   'user': new UserModel(),
-  'errors': new ErrorsModel()
+  'errors': new ErrorsModel(),
+  'status': new StatusModel()
 };
 
 // initial model value
@@ -248,6 +253,14 @@ function logError(err) {
     console.log('error in the error handler! ' + err.stack);
   }
 }
+
+ss.server.on('disconnect', function() {
+  model.status.connected(false);
+});
+
+ss.server.on('reconnect', function() {
+  model.status.connected(true);
+});
 
 ko.applyBindings(model);
 

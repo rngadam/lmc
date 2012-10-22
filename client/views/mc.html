@@ -22,14 +22,14 @@
  *-->
 <html lang="en">
 <head>
-	<SocketStream/>
-	<title>Lophilo Management Console</title>
-	<script>
-		// https://github.com/twitter/bootstrap/pull/1845
-		function closeAlert() {
-			$('#alert-dialog').hide();
-		}
-	</script>
+    <SocketStream/>
+    <title>Lophilo Management Console</title>
+    <script>
+        // https://github.com/twitter/bootstrap/pull/1845
+        function closeAlert() {
+            $('#alert-dialog').hide();
+        }
+    </script>
 </head>
 <body>
 <!-- ################################## -->
@@ -37,212 +37,224 @@
 <!-- ################################## -->
 
 <div class="navbar">
-	<div class="navbar-inner">
-		<ul class="nav nav-tabs">
-			<a class="brand" href="http://lophilo.com" target="new">Lophilo</a>
-			<li><a href="#system" data-placement="bottom" data-toggle="tab" rel="tooltip" title="This is the system tab with some versioning and status information" data-bind="click: versions.refresh">System</a></li>
-			<li><a href="#editing" data-toggle="tab" rel="tooltip" title="Existing apps and the ability to create new ones with Cloud9" data-bind="click: apps.refresh">Applications</a></li>
-			<li><a href="#processes" data-toggle="tab" rel="tooltip" title="Running processes" data-bind="click: processes.refresh">Processes</a></li>
-			<li><a href="#settings" data-toggle="tab" rel="tooltip" title="General system settings (security, services, accounts)">Settings</a></li>
-			<li class="dropdown">
-			  <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-			  	Help
-			  </a>
-			  <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-			    <li>
-			    	<a tabindex="-1" href="https://github.com/Lophilo/lophilo/wiki" target="new">System documentation</a>
-			    	<a tabindex="-1" href="https://github.com/Lophilo/lophilo/issues/new" target="new">Report bug</a>
-			    	<a tabindex="-1" href="#">About</a>
-			    </li>
-			  </ul>
-			</li>
-			<li class="dropdown">
-			  <a class="dropdown-toggle" data-toggle="dropdown" href="#" data-bind="with: user">
-			  	<b data-bind="text: username"></b>
-			  </a>
-			  <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-			    <li>
-			    	<a tabindex="-1" href="/auth/github">Login with Github</a>
-			    </li>
-			    <li>
-			    	<a href="#pubkey" tabindex="-1" data-toggle="modal" data-bind="click: user.refreshPubKey">Github public key</a>
-			    </li>
-			    <li>
-			    	<a tabindex="-1" href="" data-bind="click: require('/mc.js').logout">Logout</a>
-			    </li>
-			  </ul>
-			</li>
-	  		<li><a href="#system" rel="tooltip" title="Load average (1mn)"><span class="dynamicsparkline">Loading..</span></a></li>
+    <div class="navbar-inner">
+        <ul class="nav nav-tabs">
+            <a class="brand" href="http://lophilo.com" target="new">Lophilo</a>
+            <li><a href="#system" data-placement="bottom" data-toggle="tab" rel="tooltip" title="This is the system tab with some versioning and status information" data-bind="click: versions.refresh">System</a></li>
+            <li><a href="#editing" data-toggle="tab" rel="tooltip" title="Existing apps and the ability to create new ones with Cloud9" data-bind="click: apps.refresh">Applications</a></li>
+            <li><a href="#processes" data-toggle="tab" rel="tooltip" title="Running processes" data-bind="click: processes.refresh">Processes</a></li>
+            <li><a href="#settings" data-toggle="tab" rel="tooltip" title="General system settings (security, services, accounts)">Settings</a></li>
+            <li class="dropdown">
+              <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                Help
+              </a>
+              <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                <li>
+                    <a tabindex="-1" href="https://github.com/Lophilo/lophilo/wiki" target="new">System documentation</a>
+                    <a tabindex="-1" href="https://github.com/Lophilo/lophilo/issues/new" target="new">Report bug</a>
+                    <a tabindex="-1" href="#">About</a>
+                </li>
+              </ul>
+            </li>
+            <li class="dropdown">
+              <a class="dropdown-toggle" data-toggle="dropdown" href="#" data-bind="with: user">
+                <b data-bind="text: username"></b>
+              </a>
+              <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                <li>
+                    <a tabindex="-1" href="/auth/github">Login with Github</a>
+                </li>
+                <li>
+                    <a href="#pubkey" tabindex="-1" data-toggle="modal" data-bind="click: user.refreshPubKey">Github public key</a>
+                </li>
+                <li>
+                    <a tabindex="-1" href="" data-bind="click: require('/mc.js').logout">Logout</a>
+                </li>
+              </ul>
+            </li>
+            <li>
+                <a href="#system" rel="tooltip" title="Load average (1mn)">
+                    <span class="dynamicsparkline">Loading..</span>
+                </a>
+            </li>
+        </ul>
 
-		</ul>
-	</div>
+        <div class="container">
+                <a href="#system" class="brand" rel="tooltip" title="Disconnected" data-bind="ifnot: status.connected">
+                    <img src="/icons/gnome-netstatus-error.svg" height=18 width=18></img>
+                </a>
+                <a href="#system" class="brand" rel="tooltip" title="Connected" data-bind="if: status.connected">
+                    <img src="/icons/gnome-netstatus-txrx.svg" height=18 width=18></img>
+                </a>
+        </div> <!-- class="navbar-inner" -->
+    </div>
 
-	<div id="myTabContent" class="tab-content">
-	  <div class="tab-pane fade in active" id="system">
-	  	<div class="well">System health and management</div>
-		<div class="btn-group" data-toggle="buttons-radio">
-		  <button type="button" class="btn">Restart...</button>
-		  <button type="button" class="btn">Switch off...</button>
-		</div>
+    <div id="myTabContent" class="tab-content">
+      <div class="tab-pane fade in active" id="system">
+        <div class="well">System health and management</div>
+        <div class="btn-group" data-toggle="buttons-radio">
+          <button type="button" class="btn">Restart...</button>
+          <button type="button" class="btn">Switch off...</button>
+        </div>
 
-		<div class="accordion" id="accordion2">
-		  <div class="accordion-group">
-		    <div class="accordion-heading">
-		      <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
-		        Statistics
-		      </a>
-		    </div>
-		    <div id="collapseOne" class="accordion-body collapse in">
-		      <div class="accordion-inner" data-bind="with: stats">
-		        <p>Uptime console: <span data-bind="text: processDisplay"></span></p>
-		        <p>Uptime system: <span data-bind="text: systemDisplay"></span></p>
-		      </div>
-		    </div>
-		  </div>
-		  <div class="accordion-group">
-		    <div class="accordion-heading">
-		      <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
-		        Versions
-		      </a>
-		    </div>
-		    <div id="collapseTwo" class="accordion-body collapse">
-		      <div class="accordion-inner" data-bind="with: versions">
-		  		<ul data-bind="foreach: items">
-			  		<li><span data-bind="text: name"></span>: <span data-bind="text: version"></span>
-			  	</ul>
-		      </div>
-		    </div>
-		  </div>
-		</div>
+        <div class="accordion" id="accordion2">
+          <div class="accordion-group">
+            <div class="accordion-heading">
+              <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
+                Statistics
+              </a>
+            </div>
+            <div id="collapseOne" class="accordion-body collapse in">
+              <div class="accordion-inner" data-bind="with: stats">
+                <p>Uptime console: <span data-bind="text: processDisplay"></span></p>
+                <p>Uptime system: <span data-bind="text: systemDisplay"></span></p>
+              </div>
+            </div>
+          </div>
+          <div class="accordion-group">
+            <div class="accordion-heading">
+              <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
+                Versions
+              </a>
+            </div>
+            <div id="collapseTwo" class="accordion-body collapse">
+              <div class="accordion-inner" data-bind="with: versions">
+                <ul data-bind="foreach: items">
+                    <li><span data-bind="text: name"></span>: <span data-bind="text: version"></span>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
 
-	  </div>
+      </div>
 
-	  <div class="tab-pane fade" id="editing">
-	  	<div class="well">Editing and creating Lophilo applications</div>
-			<ul class="thumbnails">
-				<div>
-					<li class="span2">
-						<div class="thumbnail">
-						  	<a href="#new-app" role="button" class="btn" data-toggle="modal">
-						  		<img src="/icons/list-add.svg" alt="Add a new application" width=128 height=128>
-						  	</a>
-						 	<center>
-						 		Add new...
-						 	</center>
-						</div>
-					</li>
-				</div>
-				<div>
-					<li class="span2">
-						<div class="thumbnail">
-						  	<a href="#checkout-app" role="button" class="btn" data-toggle="modal" data-bind="click: repos.refresh">
-						  		<img src="/icons/list-add.svg" alt="Checkout an existing app" width=128 height=128>
-						  	</a>
-						 	<center>
-						 		Checkout...
-						 	</center>
-						</div>
-					</li>
-				</div>
+      <div class="tab-pane fade" id="editing">
+        <div class="well">Editing and creating Lophilo applications</div>
+            <ul class="thumbnails">
+                <div>
+                    <li class="span2">
+                        <div class="thumbnail">
+                            <a href="#new-app" role="button" class="btn" data-toggle="modal">
+                                <img src="/icons/list-add.svg" alt="Add a new application" width=128 height=128>
+                            </a>
+                            <center>
+                                Add new...
+                            </center>
+                        </div>
+                    </li>
+                </div>
+                <div>
+                    <li class="span2">
+                        <div class="thumbnail">
+                            <a href="#checkout-app" role="button" class="btn" data-toggle="modal" data-bind="click: repos.refresh">
+                                <img src="/icons/list-add.svg" alt="Checkout an existing app" width=128 height=128>
+                            </a>
+                            <center>
+                                Checkout...
+                            </center>
+                        </div>
+                    </li>
+                </div>
 
-				<!-- ko foreach: apps.items -->
-				<li class="span2">
-					<div class="thumbnail">
-					  	<a href="" data-bind="click: $parent.apps.run" role="button" class="btn" data-toggle="modal">
-					  		<img data-bind="attr: {src: icon}" alt="test" width=128 height=128>
-					  	</a>
-					 	<center>
-					 		<span data-bind="text: name"></span>
-					 		<p>
-					 		<!--
-					 		<a class="btn btn-small" href="#">
-					 			<i class="icon-pencil">E</i>
-					 		</a>
-					 		<a class="btn btn-small" href="#">
-					 			<i class="icon-trash">X</i>
-					 		</a>
-					 		-->
-					 		<a class="btn btn-small" href="#" data-bind="click: $parent.apps.edit">E</a>
-					 		<a class="btn btn-small" href="#" data-bind="click: $parent.apps.rm">X</a>
-					 		</p>
-					 	</center>
-					</div>
-				</li>
-				 <!-- /ko -->
-			</ul>
-	  </div>
+                <!-- ko foreach: apps.items -->
+                <li class="span2">
+                    <div class="thumbnail">
+                        <a href="" data-bind="click: $parent.apps.run" role="button" class="btn" data-toggle="modal">
+                            <img data-bind="attr: {src: icon}" alt="test" width=128 height=128>
+                        </a>
+                        <center>
+                            <span data-bind="text: name"></span>
+                            <p>
+                            <!--
+                            <a class="btn btn-small" href="#">
+                                <i class="icon-pencil">E</i>
+                            </a>
+                            <a class="btn btn-small" href="#">
+                                <i class="icon-trash">X</i>
+                            </a>
+                            -->
+                            <a class="btn btn-small" href="#" data-bind="click: $parent.apps.edit">E</a>
+                            <a class="btn btn-small" href="#" data-bind="click: $parent.apps.rm">X</a>
+                            </p>
+                        </center>
+                    </div>
+                </li>
+                 <!-- /ko -->
+            </ul>
+      </div>
 
-	  <div class="tab-pane fade" id="processes" data-bind="with: processes">
-	  	<div class="well">Processes and Services running</div>
-			<ul class="thumbnails">
-				<!-- ko foreach: items -->
-				<li class="span2">
-					<div class="thumbnail">
-					  	<a href="" data-bind="click: $parent.status" role="button" class="btn" data-toggle="modal">
-					  		<img data-bind="attr: {src: icon}" alt="Running process" width=128 height=128>
-					  	</a>
-					 	<center>
-					 		<span data-bind="text: name"></span>
-					 		<p>
-					 		<a class="btn btn-small" href="#" data-bind="click: $parent.open">O</a>
-					 		<a class="btn btn-small" href="#" data-bind="click: $parent.kill">X</a>
-					 		</p>
-					 	</center>
-					</div>
-				</li>
-				 <!-- /ko -->
-			</ul>
-	  </div>
+      <div class="tab-pane fade" id="processes" data-bind="with: processes">
+        <div class="well">Processes and Services running</div>
+            <ul class="thumbnails">
+                <!-- ko foreach: items -->
+                <li class="span2">
+                    <div class="thumbnail">
+                        <a href="" data-bind="click: $parent.status" role="button" class="btn" data-toggle="modal">
+                            <img data-bind="attr: {src: icon}" alt="Running process" width=128 height=128>
+                        </a>
+                        <center>
+                            <span data-bind="text: name"></span>
+                            <p>
+                            <a class="btn btn-small" href="#" data-bind="click: $parent.open">O</a>
+                            <a class="btn btn-small" href="#" data-bind="click: $parent.kill">X</a>
+                            </p>
+                        </center>
+                    </div>
+                </li>
+                 <!-- /ko -->
+            </ul>
+      </div>
 
-	  <div class="tab-pane fade" id="settings">
-	  	<div class="well">General system settings (security, services, accounts)</div>
-			<ul class="thumbnails">
-				<li class="span2">
-					<div class="thumbnail">
-					  <img src="/icons/system-config-users.svg" alt="Configure users accounts" width=128 height=128>
-					 <center>Users</center>
-					</div>
-				</li>
+      <div class="tab-pane fade" id="settings">
+        <div class="well">General system settings (security, services, accounts)</div>
+            <ul class="thumbnails">
+                <li class="span2">
+                    <div class="thumbnail">
+                      <img src="/icons/system-config-users.svg" alt="Configure users accounts" width=128 height=128>
+                     <center>Users</center>
+                    </div>
+                </li>
 
-				<li class="span2">
-					<div class="thumbnail">
-					  <img src="/icons/system-software-update.svg" alt="Update system software" width=128 height=128>
-					  <center>Updates</center>
-					</div>
-				</li>
+                <li class="span2">
+                    <div class="thumbnail">
+                      <img src="/icons/system-software-update.svg" alt="Update system software" width=128 height=128>
+                      <center>Updates</center>
+                    </div>
+                </li>
 
-				<li class="span2">
-					<div class="thumbnail">
-					  <img src="/icons/multimedia-volume-control.svg" alt="Multimedia volume control" width=128 height=128>
-					  <center>Sound</center>
-					</div>
-				</li>
+                <li class="span2">
+                    <div class="thumbnail">
+                      <img src="/icons/multimedia-volume-control.svg" alt="Multimedia volume control" width=128 height=128>
+                      <center>Sound</center>
+                    </div>
+                </li>
 
-				<li class="span2">
-				    <div class="thumbnail">
-				      <img src="/icons/preferences-system-time.svg" alt="Set system time" width=128 height=128>
-					  <center>Time</center>
-				    </div>
-			  	</li>
+                <li class="span2">
+                    <div class="thumbnail">
+                      <img src="/icons/preferences-system-time.svg" alt="Set system time" width=128 height=128>
+                      <center>Time</center>
+                    </div>
+                </li>
 
-				<li class="span2">
-				    <div class="thumbnail">
-				      <img src="/icons/notification-network-ethernet-connected.svg" alt="Configure network" width=128 height=128>
-					  <center>Networking</center>
-				    </div>
-			  	</li>
+                <li class="span2">
+                    <div class="thumbnail">
+                      <img src="/icons/notification-network-ethernet-connected.svg" alt="Configure network" width=128 height=128>
+                      <center>Networking</center>
+                    </div>
+                </li>
 
-				<li class="span2">
-				    <div class="thumbnail">
-				      <img src="/icons/gnome-dev-media-sdmmc.svg" alt="Configure MicroSD and SD storage" width=128 height=128>
-					  <center>Storage</center>
-				    </div>
-			  	</li>
+                <li class="span2">
+                    <div class="thumbnail">
+                      <img src="/icons/gnome-dev-media-sdmmc.svg" alt="Configure MicroSD and SD storage" width=128 height=128>
+                      <center>Storage</center>
+                    </div>
+                </li>
 
-			</ul>
-	  </div>
+            </ul>
+      </div>
 
-	</div> <!--tab content-->
+    </div> <!--tab content-->
 
 </div>
 
@@ -257,15 +269,15 @@
       </div>
       <div class="modal-body">
 
-    	  <label>Application name</label>
-    	  <input type="text" data-bind="value: name" placeholder="Type a name...">
+          <label>Application name</label>
+          <input type="text" data-bind="value: name" placeholder="Type a name...">
           <!--
-    	  <label>Github repository name</label>
-    	  <input type="text" placeholder="Type a repository name...">
-    	  <span class="help-block">should be a valid git repository name</span>
-    	  <label class="checkbox">
-    	    <input type="checkbox"> Add Socketstream template
-    	  </label>
+          <label>Github repository name</label>
+          <input type="text" placeholder="Type a repository name...">
+          <span class="help-block">should be a valid git repository name</span>
+          <label class="checkbox">
+            <input type="checkbox"> Add Socketstream template
+          </label>
            -->
       </div> <!-- modal-body -->
       <div class="modal-footer">
@@ -284,9 +296,9 @@
     <h3 id="myModalLabel">Checkout Github Repository</h3>
   </div>
   <div class="modal-body" data-bind="with: repos">
-	<p>Available repositories:</p>
-	<select data-bind="options: items, optionsText: 'full_name', value: selectedItem", optionsCaption: 'Select repository to checkout...'>
-	</select>
+    <p>Available repositories:</p>
+    <select data-bind="options: items, optionsText: 'full_name', value: selectedItem", optionsCaption: 'Select repository to checkout...'>
+    </select>
   </div> <!-- modal-body -->
 
   <div class="modal-footer">
@@ -303,7 +315,7 @@
     <h3 id="myModalLabel">About</h3>
   </div>
   <div class="modal-body">
-  	Ricky Ng-Adam, Lophilo (2012)
+    Ricky Ng-Adam, Lophilo (2012)
   </div> <!-- modal-body -->
 
   <div class="modal-footer">
@@ -320,9 +332,9 @@
     <h3 id="myModalLabel">Public key</h3>
   </div>
   <div class="modal-body">
-  	<p>
-  	<span data-bind="text: user.pubkey"></span>
-  	</p>
+    <p>
+    <span data-bind="text: user.pubkey"></span>
+    </p>
   </div> <!-- modal-body -->
   <div class="modal-footer">
     <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
