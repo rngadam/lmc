@@ -173,7 +173,7 @@ var UserModel = function() {
   self.username = ko.observable('not logged in');
   self.pubkey = ko.observable('not available yet');
   self.refreshPubKey = function() {
-    ss.rpc('git.pubkey', function(pubkey) {
+    ss.rpc('git.pubkey', function(err, pubkey) {
       console.log('current pubkey ' + pubkey);
       if (pubkey == null) {
         pubkey = 'not available';
@@ -241,8 +241,6 @@ var model = {
   'status': new StatusModel()
 };
 
-// initial model value
-model.user.refreshUser();
 
 function logError(err) {
   console.log('LOGGING:' + err);
@@ -251,6 +249,9 @@ function logError(err) {
     $('#alert-dialog').show();
   } catch (err) {
     console.log('error in the error handler! ' + err.stack);
+  }
+  if(err.match(/Access denied/)) {
+    model.user.refreshUser();
   }
 }
 
@@ -261,6 +262,9 @@ ss.server.on('disconnect', function() {
 ss.server.on('reconnect', function() {
   model.status.connected(true);
 });
+
+// initial model value
+model.user.refreshUser();
 
 ko.applyBindings(model);
 

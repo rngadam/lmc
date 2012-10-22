@@ -46,6 +46,7 @@ everyauth.github
 
 ss.http.middleware.prepend(ss.http.connect.bodyParser());
 ss.http.middleware.append(everyauth.middleware());
+ss.session.store.use('redis');
 
 localconfigs.applyConfigs(
     ss,

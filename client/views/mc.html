@@ -40,7 +40,7 @@
     <div class="navbar-inner">
         <ul class="nav nav-tabs">
             <a class="brand" href="http://lophilo.com" target="new">Lophilo</a>
-            <li><a href="#system" data-placement="bottom" data-toggle="tab" rel="tooltip" title="This is the system tab with some versioning and status information" data-bind="click: versions.refresh">System</a></li>
+            <li class="active"><a href="#system" data-placement="bottom" data-toggle="tab" rel="tooltip" title="This is the system tab with some versioning and status information" data-bind="click: versions.refresh">System</a></li>
             <li><a href="#editing" data-toggle="tab" rel="tooltip" title="Existing apps and the ability to create new ones with Cloud9" data-bind="click: apps.refresh">Applications</a></li>
             <li><a href="#processes" data-toggle="tab" rel="tooltip" title="Running processes" data-bind="click: processes.refresh">Processes</a></li>
             <li><a href="#settings" data-toggle="tab" rel="tooltip" title="General system settings (security, services, accounts)">Settings</a></li>
@@ -52,7 +52,7 @@
                 <li>
                     <a tabindex="-1" href="https://github.com/Lophilo/lophilo/wiki" target="new">System documentation</a>
                     <a tabindex="-1" href="https://github.com/Lophilo/lophilo/issues/new" target="new">Report bug</a>
-                    <a tabindex="-1" href="#">About</a>
+                    <a tabindex="-1" href="#about" data-toggle="modal">About</a>
                 </li>
               </ul>
             </li>
@@ -80,12 +80,13 @@
         </ul>
 
         <div class="container">
-                <a href="#system" class="brand" rel="tooltip" title="Disconnected" data-bind="ifnot: status.connected">
-                    <img src="/icons/gnome-netstatus-error.svg" height=18 width=18></img>
-                </a>
                 <a href="#system" class="brand" rel="tooltip" title="Connected" data-bind="if: status.connected">
                     <img src="/icons/gnome-netstatus-txrx.svg" height=18 width=18></img>
                 </a>
+                <a href="#system" class="brand" rel="tooltip" title="Disconnected" data-bind="ifnot: status.connected">
+                    <img src="/icons/gnome-netstatus-error.svg" height=18 width=18></img>
+                </a>
+
         </div> <!-- class="navbar-inner" -->
     </div>
 
@@ -126,10 +127,9 @@
             </div>
           </div>
         </div>
-
       </div>
 
-      <div class="tab-pane fade" id="editing">
+      <div class="tab-pane fade in" id="editing">
         <div class="well">Editing and creating Lophilo applications</div>
             <ul class="thumbnails">
                 <div>
