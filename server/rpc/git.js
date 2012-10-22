@@ -1,4 +1,3 @@
-
 'use strict';
 
 /*
@@ -28,31 +27,31 @@ var sshkeys = require('sshkeys');
 var gitmanager = require('gitmanager');
 var config = require('../../config.js');
 
-
 function streamBuffer(data) {
   console.log('LOG: ' + data);
 }
 
 function checkout(repoUrl, username, cb) {
-  sshkeys.getPublicKeyPromise(
-    config.getSshDirectory(username),
-    username,
-    'github',
-    config.get('sshPath'))
-    .then(
-      function(key) {
-        return gitmanager.cloneGitPromise(
-            repoUrl, config.getCheckoutName(repoUrl, username), key);
-      }
-      ).then(
-      function() {
-        cb(null, true);
-      }
-      ).fail(
-      function(err) {
-        cb(err);
-      }
-      );
+  var sshDir = config.getSshDirectory(username);
+  var publicKey = sshkeys.getPublicKeyPromise(sshDir, 'github');
+
+  publicKey.then(
+    function(key) {
+      return gitmanager.cloneGitPromise(
+          repoUrl,
+          config.getCheckoutName(repoUrl, username),
+          key,
+          config.get('sshPath'));
+    }
+  ).then(
+    function() {
+      cb(null, true);
+    }
+  ).fail(
+    function(err) {
+      cb(err);
+    }
+  );
 }
 
 exports.actions = function(req, res, ss) {
@@ -67,23 +66,20 @@ exports.actions = function(req, res, ss) {
         if (err) {
           res('Error: could not checkout repository: ' + err.stack);
         } else {
-          res('Repository has been checked out ' + repoUrl);
+          res(null, 'Repository has been checked out ' + repoUrl);
         }
       });
     },
     // returns pubkey value (creates it if not available)
     pubkey: function() {
-      sshkeys.getPublicKey(
-          config.getSshDirectory(req.session.userId),
-          'github',
-          function(err, key) {
-            if (err) {
-              // publish error err
-              res(null);
-            } else {
-              res(key);
-            }
-          });
+      var sshDir = config.getSshDirectory(req.session.userId);
+      sshkeys.getPublicKey(sshDir, 'github', function(err, key) {
+          if (err) {
+            res(err);
+          } else {
+            res(null, key);
+          }
+      });
     }
   };
 };

@@ -21,11 +21,7 @@
  *
  */
 
-
-// Client Code
-
 console.log('mc loading');
-
 
 var AppsModel = function() {
   var self = this;
@@ -111,14 +107,36 @@ var ProcessesModel = function() {
 };
 
 var StatsModel = function() {
-  this.process = ko.observable();
-  this.system = ko.observable();
-  this.processDisplay = ko.computed(function() {
-    return Math.round(this.process()) + 's';
-  }, this),
-  this.systemDisplay = ko.computed(function() {;
-    return Math.round(this.system()) + 's';
+  var self = this;
+  self.process = ko.observable();
+  self.system = ko.observable();
+  self.myvalues = [];
+  self.processDisplay = ko.computed(function() {
+    return Math.round(self.process()) + 's';
+  }, self),
+
+  self.systemDisplay = ko.computed(function() {;
+    return Math.round(self.system()) + 's';
   }, this);
+
+  self.refreshLoadAvg = function() {
+    ss.rpc('system.loadavg', function(err, res) {
+      if (err) { logError(err); return; }
+      // TODO: move to HTML binding
+      self.myvalues.push(res.one);
+      if (self.myvalues.length > 10)
+        self.myvalues.shift();
+      $('.dynamicsparkline').sparkline(self.myvalues);
+    });
+  }
+
+  self.refreshUptime = function() {
+    ss.rpc('system.uptime', function(err, res) {
+      if (err) { logError(err); return; }
+      self.process(res.process);
+      self.system(res.system);
+    });
+  }
 };
 
 var ErrorsModel = function() {
@@ -166,7 +184,17 @@ var UserModel = function() {
       console.log('logged out');
       self.username('not logged in');
     });
-  };
+  }
+  self.refreshUser = function() {
+    ss.rpc('auth.current', function(err, username) {
+      if (err) { logError(err); return; }
+      console.log('current user ' + username);
+      if (username == null) {
+        username = 'not logged in';
+      }
+      self.username(username);
+    });
+  }
 };
 
 var ReposModel = function() {
@@ -189,9 +217,11 @@ var ReposModel = function() {
   self.checkoutRepository = function() {
     console.log('checking out ' + self.selectedItem().full_name);
     console.log('using sshurl ' + self.selectedItem().ssh_url);
-    ss.rpc('git.checkout', self.selectedItem().ssh_url, function() {
-      console.log('checkout completed');
+    ss.rpc('git.checkout', self.selectedItem().ssh_url, function(err, result) {
+      if (err) { logError(err); return; }
+      console.log(result);
       self.refresh();
+      model.apps.refresh();
     });
   }
 }
@@ -206,15 +236,8 @@ var model = {
   'errors': new ErrorsModel()
 };
 
-console.dir(model);
-ss.rpc('auth.current', function(err, username) {
-  if (err) { logError(err); return; }
-  console.log('current user ' + username);
-  if (username == null) {
-    username = 'not logged in';
-  }
-  model.user.username(username);
-});
+// initial model value
+model.user.refreshUser();
 
 function logError(err) {
   console.log('LOGGING:' + err);
@@ -228,24 +251,10 @@ function logError(err) {
 
 ko.applyBindings(model);
 
-var myvalues = [];
+clearInterval(model.stats.refreshLoadAvg);
+clearInterval(model.stats.refreshUptime);
+setInterval(model.stats.refreshLoadAvg, 5000);
+setInterval(model.stats.refreshUptime, 5000);
 
-function update() {
-  ss.rpc('system.loadavg', function(err, res) {
-    if (err) { logError(err); return; }
-    myvalues.push(res.one);
-    if (myvalues.length > 10)
-      myvalues.shift();
-    $('.dynamicsparkline').sparkline(myvalues);
-  });
-  ss.rpc('system.uptime', function(err, res) {
-    if (err) { logError(err); return; }
-    model.stats.process(res.process);
-    model.stats.system(res.system);
-  });
-}
-
-clearInterval(update);
-setInterval(update, 5000);
 
 console.log('mc loaded');
