@@ -28,6 +28,9 @@ function logger(model, id, err) {
   try {
     model.items.push({errstring: '' + err});
     $(id).show();
+    setTimeout(function() {
+      $(id).alert('close');
+    }, 5000);
   } catch (err) {
     console.log('error in the error handler! ' + err.stack);
   }
@@ -126,7 +129,7 @@ var StatsModel = function() {
   var self = this;
   self.process = ko.observable();
   self.system = ko.observable();
-  self.myvalues = [];
+  self.history = [];
   self.processDisplay = ko.computed(function() {
     return Math.round(self.process()) + 's';
   }, self),
@@ -138,11 +141,9 @@ var StatsModel = function() {
   self.refreshLoadAvg = function() {
     ss.rpc('system.loadavg', function(err, res) {
       if (err) { logError(err); return; }
-      // TODO: move to HTML binding
-      self.myvalues.push(res.one);
-      if (self.myvalues.length > 10)
-        self.myvalues.shift();
-      $('.dynamicsparkline').sparkline(self.myvalues);
+      self.history.push(res.one);
+      if (self.history.length > 10)
+        self.history.shift();
     });
   }
 
@@ -161,10 +162,10 @@ function createItemsLatest() {
   this.latest = ko.computed(function() {
     if (this.items().length > 0) {
       var last = this.items()[this.items().length - 1];
-      console.log('last error: ' + console.dir(last));
+      //console.log('last error: ' + console.dir(last));
       return last;
     }
-    return 'No error!';
+    return 'No items';
   }, this);
 };
 
@@ -185,7 +186,6 @@ var VersionsModel = function() {
       self.items(versions);
     });
   }
-
 };
 
 var UserModel = function() {
@@ -278,10 +278,15 @@ model.user.refreshUser();
 
 ko.applyBindings(model);
 
+/* disabled
 clearInterval(model.stats.refreshLoadAvg);
 clearInterval(model.stats.refreshUptime);
 setInterval(model.stats.refreshLoadAvg, 5000);
 setInterval(model.stats.refreshUptime, 5000);
+*/
 
+model.stats.refreshLoadAvg();
+model.stats.refreshUptime();
+model.versions.refresh();
 
 console.log('mc loaded');

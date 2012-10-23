@@ -51,9 +51,7 @@ exports.actions = function(req, res, ss) {
         if (err) {
           res(err);
         } else {
-          console.log(files);
           for (var i in files) {
-            console.log(files[i]);
             if (files[i].indexOf('.git') > 0) {
               data.push({
                 name: files[i],
