@@ -250,43 +250,51 @@ var ReposModel = function() {
   }
 }
 
-var model = {
-  'versions': new VersionsModel(),
-  'apps': new AppsModel(),
-  'processes': new ProcessesModel(),
-  'stats': new StatsModel(),
-  'repos': new ReposModel(),
-  'user': new UserModel(),
-  'errors': new ErrorsModel(),
-  'success': new ErrorsModel(),
-  'status': new StatusModel()
-};
+var model;
 
-var logError = logger.bind(null, model.errors, '#alert-dialog');
-var logSuccess = logger.bind(null, model.success, '#success-dialog');
+ss.rpc('system.info', function(err, system) {
+  model = {
+    'versions': new VersionsModel(),
+    'apps': new AppsModel(),
+    'processes': new ProcessesModel(),
+    'stats': new StatsModel(),
+    'repos': new ReposModel(),
+    'user': new UserModel(),
+    'errors': new ErrorsModel(),
+    'success': new ErrorsModel(),
+    'status': new StatusModel(),
+    'system': ko.mapping.fromJS(system)
+  };
 
-ss.server.on('disconnect', function() {
-  model.status.connected(false);
+  console.dir(system);
+  var logError = logger.bind(null, model.errors, '#alert-dialog');
+  var logSuccess = logger.bind(null, model.success, '#success-dialog');
+
+  ss.server.on('disconnect', function() {
+    model.status.connected(false);
+  });
+
+  ss.server.on('reconnect', function() {
+    model.status.connected(true);
+  });
+
+  // initial model value
+  model.user.refreshUser();
+
+  ko.applyBindings(model);
+
+  model.stats.refreshLoadAvg();
+  model.stats.refreshUptime();
+  model.versions.refresh();
+
+  console.log('mc loaded');
+
+  /* disabled
+  clearInterval(model.stats.refreshLoadAvg);
+  clearInterval(model.stats.refreshUptime);
+  setInterval(model.stats.refreshLoadAvg, 5000);
+  setInterval(model.stats.refreshUptime, 5000);
+  */
+
 });
 
-ss.server.on('reconnect', function() {
-  model.status.connected(true);
-});
-
-// initial model value
-model.user.refreshUser();
-
-ko.applyBindings(model);
-
-/* disabled
-clearInterval(model.stats.refreshLoadAvg);
-clearInterval(model.stats.refreshUptime);
-setInterval(model.stats.refreshLoadAvg, 5000);
-setInterval(model.stats.refreshUptime, 5000);
-*/
-
-model.stats.refreshLoadAvg();
-model.stats.refreshUptime();
-model.versions.refresh();
-
-console.log('mc loaded');

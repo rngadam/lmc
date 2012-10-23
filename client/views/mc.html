@@ -104,9 +104,14 @@
               </a>
             </div>
             <div id="collapseOne" class="accordion-body collapse in">
-              <div class="accordion-inner" data-bind="with: stats">
-                <p>Uptime console: <span data-bind="text: processDisplay"></span></p>
-                <p>Uptime system: <span data-bind="text: systemDisplay"></span></p>
+              <div class="accordion-inner">
+                <table class="table table-striped">
+                    <tr><td>Uptime console<td><span data-bind="text: stats.processDisplay"></span>
+                    <tr><td>Uptime system<td> <span data-bind="text: stats.systemDisplay"></span>
+                    <tr><td>Process ID<td> <span data-bind="text: system.process.pid"></span>
+                    <tr><td>Arch<td> <span data-bind="text: system.os.arch"></span>
+                    <tr><td>Free memory<td><span data-bind="text: system.os.freemem"></span>
+                </table>
               </div>
             </div>
           </div>
@@ -118,9 +123,10 @@
             </div>
             <div id="collapseTwo" class="accordion-body collapse">
               <div class="accordion-inner" data-bind="with: versions">
-                <ul data-bind="foreach: items">
-                    <li><span data-bind="text: name"></span>: <span data-bind="text: version"></span>
-                </ul>
+                <!-- fix table stripe here for generated -->
+                <table data-bind="foreach: items" class="table table-striped">
+                    <tr data-bind="css: { 'even': ($index() % 2 == 0) }"><td><span data-bind="text: name"></span><td><span data-bind="text: version"></span>
+                </table>
               </div>
             </div>
           </div>

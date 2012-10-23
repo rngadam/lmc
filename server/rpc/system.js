@@ -38,14 +38,6 @@ function createVersions() {
       version: 'version 1.0 (tabby)'
     },
     {
-      name: 'Operating system',
-      version: 'Debian Wheezy 7.0'
-    },
-    {
-      name: 'Linux Kernel',
-      version: '3.4.4'
-    },
-    {
       name: 'Kernel driver',
       version: '1.0 (tabby)'
     }
@@ -67,7 +59,67 @@ function createVersions() {
   return data;
 }
 
-var versions = {data: null};
+var versions = null;
+
+function getVersions() {
+  if(!versions) {
+    versions = createVersions();
+  }
+  return versions;
+}
+exports.getVersions = getVersions;
+
+function getAllMethods(obj) {
+    return Object.getOwnPropertyNames(obj).filter(function(property) {
+        return typeof obj[property] == 'function';
+    });
+}
+
+function getOperatingSystemInformation() {
+  var info = {};
+  var methodList = getAllMethods(os);
+  for(var i in methodList) {
+    var name = methodList[i];
+    var fnc = os[name];
+    if(typeof fnc == 'function') {
+      info[name] = fnc();
+    }
+  }
+  return info;
+}
+
+function getProcessInformation() {
+  var info = {};
+  var methodList = [
+    'uptime',
+    'getuid',
+    'getgid',
+    'execPath',
+    'pid',
+    'features',
+    'memoryUsage',
+    'uvCounters',
+    'config'
+  ];
+  for(var i in methodList) {
+    var name = methodList[i];
+    var datasource = process[name];
+    if(typeof datasource == 'function') {
+      info[name] = datasource();
+    } else {
+      info[name] = datasource;
+    }
+  }
+  return info;
+}
+
+function getSystemInformation() {
+  var all = {
+    os: getOperatingSystemInformation(),
+    process: getProcessInformation()
+  };
+  return all;
+}
 
 exports.actions = function(req, res, ss) {
 
@@ -75,26 +127,34 @@ exports.actions = function(req, res, ss) {
   //req.use('debug');
 
   return {
-    loadavg: function loadavg() {
+    info: function() {
+      res(null, getSystemInformation());
+    },
+    versions: function() {
+      res(null, getVersions());
+    },
+    os: function() {
+      res(null, getOperatingSystemInformation());
+    },
+    process: function() {
+      res(null, getProcessInformation());
+    },
+    loadavg: function() {
       var values = os.loadavg();
       res(null, {one: values[0], five: values[1], fifteen: values[2] });
     },
-    versions: function version() {
-      if(!versions.data) {
-        versions.data = createVersions();
-      }
-      res(null, versions);
-    },
-    uptime: function uptime() {
+    uptime: function() {
       res(null, {process: process.uptime(), system: os.uptime()});
     }
   };
 };
 
-function dumpInfo() {
-  console.log(JSON.stringify(createVersions(), null, 2));
+function dumpAll() {
+  console.log(JSON.stringify(getSystemInformation(), null, 2));
+  console.log(JSON.stringify(getVersions(), null, 2));
 }
 
 if(require.main === module) {
-  dumpInfo();
+  //dumpVersions();
+  dumpAll();
 }

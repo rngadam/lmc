@@ -11,19 +11,21 @@
     "test": "node_modules/.bin/mocha test"
   },
   "dependencies": {
-    "socketstream": "0.3.x",
-    "ss-stylus": "0.1.x",
-    "ss-hogan": "0.1.x",
-    "ss-console": "0.1.x",
-    "everyauth": "~0.3.0",
-    "github": "~0.1.5",
-    "connect-redis": "~1.4.4",
     "assert": "~0.4.9",
-    "redis": "~0.8.1",
-    "q": "~0.8.8",
+    "connect-redis": "~1.4.4",
+    "everyauth": "~0.3.0",
+    "forkarator": "0.1.x",
+    "github": "~0.1.5",
+    "gitmanager": "0.1.x",
+    "lophilo": "0.0.x",
     "mkdirp": "~0.3.4",
-    "q-fs": "~0.1.32",
-    "ss-localconfigs": "0.0.x"
+    "redis": "~0.8.1",
+    "socketstream": "0.3.x",
+    "ss-console": "0.1.x",
+    "ss-hogan": "0.1.x",
+    "ss-localconfigs": "0.0.x",
+    "ss-stylus": "0.1.x",
+    "sshkeys": "0.1.x"
   },
   "devDependencies": {
    "mocha": "1.6.x"
