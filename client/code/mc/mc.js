@@ -48,14 +48,9 @@ var AppsModel = function() {
   self.items = ko.observableArray();
   self.name = ko.observable();
 
-  self.createApp = function() {
-    logSuccess("new app name %s", this.name());
-    $("#new-app").modal('hide');
-  }
-
   self.refresh = function() {
     ss.rpc('apps.list', function(err, apps) {
-      if (err) { logError(err); return; }
+      if (err) { return logError(err); }
       console.log('application list received');
       self.items(apps);
     });
@@ -64,7 +59,7 @@ var AppsModel = function() {
   self.run = function(app) {
     console.log('running app ' + app);
     ss.rpc('apps.run', app.name, function(err, url) {
-      if (err) { logError(err); return; }
+      if (err) { return logError(err); }
       logSuccess('opening ' + url);
       window.open(url);
     });
@@ -73,7 +68,7 @@ var AppsModel = function() {
   self.edit = function(app) {
     console.log('editing doc');
     ss.rpc('cloud9.edit', app.name, function(err, url) {
-      if (err) { logError(err); return; }
+      if (err) { return logError(err); }
       logSuccess('opening ' + url);
       window.open(url);
     });
@@ -82,7 +77,7 @@ var AppsModel = function() {
   self.rm = function(app) {
     console.log('deleting app');
     ss.rpc('apps.rm', app.name, function(err, res) {
-      if (err) { logError(err); return; }
+      if (err) { return logError(err); }
       logSuccess(res);
       self.refresh();
     });
@@ -94,7 +89,7 @@ var ProcessesModel = function() {
   self.items = ko.observableArray();
   self.refresh = function() {
     ss.rpc('processes.list', function(err, processes) {
-      if (err) { logError(err); return; }
+      if (err) { return logError(err); }
       console.log('process list received');
       self.items(processes);
     });
@@ -102,7 +97,7 @@ var ProcessesModel = function() {
   self.kill = function(process) {
     console.log('killing process');
     ss.rpc('processes.kill', process.id, function(err, res) {
-      if (err) { logError(err); return; }
+      if (err) { return logError(err); }
       logSuccess(res);
       self.refresh();
     });
@@ -110,14 +105,14 @@ var ProcessesModel = function() {
   self.status = function(process) {
     console.log('status process');
     ss.rpc('processes.status', process.id, function(err, res) {
-      if (err) { logError(err); return; }
+      if (err) { return logError(err); }
       logSuccess(res);
     });
   };
   self.open = function(process) {
     console.log('opening process');
     ss.rpc('processes.open', process.id, function(err, url) {
-      if (err) { logError(err); return; }
+      if (err) { return logError(err); }
       logSuccess('opening ' + url);
       window.open(url);
     });
@@ -140,7 +135,7 @@ var StatsModel = function() {
 
   self.refreshLoadAvg = function() {
     ss.rpc('system.loadavg', function(err, res) {
-      if (err) { logError(err); return; }
+      if (err) { return logError(err); }
       self.history.push(res.one);
       if (self.history.length > 10)
         self.history.shift();
@@ -149,7 +144,7 @@ var StatsModel = function() {
 
   self.refreshUptime = function() {
     ss.rpc('system.uptime', function(err, res) {
-      if (err) { logError(err); return; }
+      if (err) { return logError(err); }
       self.process(res.process);
       self.system(res.system);
     });
@@ -181,7 +176,7 @@ var VersionsModel = function() {
   self.items = ko.observableArray();
   self.refresh = function () {
     ss.rpc('system.versions', function(err, versions) {
-      if (err) { logError(err); return; }
+      if (err) { return logError(err); }
       console.log('versions received');
       self.items(versions);
     });
@@ -204,14 +199,14 @@ var UserModel = function() {
   self.logout = function() {
     console.log('logging out');
     ss.rpc('auth.logout', function(err, res) {
-      if (err) { logError(err); return; }
+      if (err) { return logError(err);s }
       self.username('not logged in');
       logSuccess('logged out');
     });
   }
   self.refreshUser = function() {
     ss.rpc('auth.current', function(err, username) {
-      if (err) { logError(err); return; }
+      if (err) { return logError(err); }
       console.log('current user ' + username);
       if (username == null) {
         username = 'not logged in';
@@ -221,7 +216,38 @@ var UserModel = function() {
   }
 };
 
-var ReposModel = function() {
+// some form of inheritance for the next two?
+
+var ExamplesModel = function() {
+  var self = this;
+  self.items = ko.observableArray();
+  self.selectedItem = ko.observable();
+  self.name = ko.observable();
+
+  self.createApp = function() {
+    logSuccess("new app name " + this.name() + " from " + self.selectedItem().ssh_url);
+    $("#new-app").modal('hide');
+    ss.rpc('git.checkout', self.selectedItem().ssh_url, self.name())
+    model.apps.refresh();
+  }
+
+  self.selectItem = function(item) {
+    console.log('selecting ' + item);
+    self.selectedItem(item);
+  }
+  self.refresh = function() {
+    ss.rpc('github.examples', function(err, repos) {
+      if (err) { return logError(err); }
+      console.dir(repos);
+      if(!repos.length) {
+        logError('No examples available!');
+      }
+      self.items(repos);
+    });
+  }
+};
+
+var ReposModel =  function() {
   var self = this;
   self.items = ko.observableArray();
   self.selectedItem = ko.observable();
@@ -229,10 +255,9 @@ var ReposModel = function() {
     console.log('selecting ' + item);
     self.selectedItem(item);
   }
-
   self.refresh = function() {
     ss.rpc('github.repositories', function(err, repos) {
-      if (err) { logError(err); return; }
+      if (err) { return logError(err); }
       console.log('repositories received');
       self.items(repos);
     });
@@ -242,7 +267,7 @@ var ReposModel = function() {
     console.log('checking out ' + self.selectedItem().full_name);
     console.log('using sshurl ' + self.selectedItem().ssh_url);
     ss.rpc('git.checkout', self.selectedItem().ssh_url, function(err, result) {
-      if (err) { logError(err); return; }
+      if (err) { return logError(err); }
       logSuccess(result);
       self.refresh();
       model.apps.refresh();
@@ -252,23 +277,37 @@ var ReposModel = function() {
 
 var model;
 
+var logError = console.log;
+var logSuccess = console.log;
+
 ss.rpc('system.info', function(err, system) {
   model = {
-    'versions': new VersionsModel(),
     'apps': new AppsModel(),
-    'processes': new ProcessesModel(),
-    'stats': new StatsModel(),
-    'repos': new ReposModel(),
-    'user': new UserModel(),
     'errors': new ErrorsModel(),
-    'success': new ErrorsModel(),
+    'examples': new ExamplesModel(),
+    'processes': new ProcessesModel(),
+    'repos': new ReposModel(),
+    'stats': new StatsModel(),
     'status': new StatusModel(),
-    'system': ko.mapping.fromJS(system)
+    'success': new ErrorsModel(),
+    'system': ko.mapping.fromJS(system),
+    'user': new UserModel(),
+    'versions': new VersionsModel(),
   };
-
+  console.dir(model);
   console.dir(system);
-  var logError = logger.bind(null, model.errors, '#alert-dialog');
-  var logSuccess = logger.bind(null, model.success, '#success-dialog');
+
+  logError = logger.bind(null, model.errors, '#alert-dialog');
+  logSuccess = logger.bind(null, model.success, '#success-dialog');
+
+  // initial model value
+  model.user.refreshUser();
+  model.stats.refreshLoadAvg();
+  model.stats.refreshUptime();
+  model.versions.refresh();
+
+  ko.applyBindings(model);
+
 
   ss.server.on('disconnect', function() {
     model.status.connected(false);
@@ -277,15 +316,6 @@ ss.rpc('system.info', function(err, system) {
   ss.server.on('reconnect', function() {
     model.status.connected(true);
   });
-
-  // initial model value
-  model.user.refreshUser();
-
-  ko.applyBindings(model);
-
-  model.stats.refreshLoadAvg();
-  model.stats.refreshUptime();
-  model.versions.refresh();
 
   console.log('mc loaded');
 

@@ -23,14 +23,83 @@
  */
 var assert = require('assert');
 var redis = require('redis'),
-    rclient = redis.createClient();
+    redisClient = redis.createClient();
 
 var GitHubApi = require('github');
 
+// see http://ajaxorg.github.com/node-github/
 var github = new GitHubApi({
   version: '3.0.0'
 });
 assert(github, "Can't load Github API");
+
+function fetchUserRepos(res) {
+  github.repos.getAll({}, function(err, data) {
+    if(err) return res(err);
+    console.log('fetched data from github');
+    res(null, data);
+  });
+}
+
+function fetchOrgRepos(org, res) {
+  //TODO: does not take the parameters into account
+  github.repos.getFromOrg({
+    org: org,
+    per_page: 100, // TODO: watch out if we get to >100!
+    sort: 'full_name',
+    }, function(err, data) {
+    if(err) return res(err);
+    console.log('fetched data from github');
+    res(null, data);
+  });
+}
+
+function memoize(key, fnc, cb) {
+  redisClient.get(key, function(err, data) {
+    if(err) return cb(err);
+    if(data) {
+      console.log('cache hit for ' + key);
+      cb(null, JSON.parse(data));
+    } else {
+      console.log('cache miss for ' + key);
+      fnc(function(err, fncdata) {
+        if(err) return cb(err);
+        redisClient.set(key, JSON.stringify(fncdata), function(err, data) {
+          if(err) return cb(err);
+          console.log('stored data for' + key);
+          cb(null, fncdata);
+        });
+      })
+    }
+  });
+}
+
+function authenticateAndFetchUserRepos(req, res) {
+  github.authenticate({
+    type: 'oauth',
+    token: req.session.oauth
+  });
+  fetchUserRepos(res);
+}
+
+function fork(user, repo, cb) {
+  github.repos.fork({
+    user: user,
+    repo: repo
+  }, cb);
+}
+
+function filterRepos(match, repos, cb) {
+  var filteredRepos = [];
+  for(var i in repos) {
+    var repo = repos[i];
+    if(repo.name && repo.name.match(match)) {
+      console.log('found ' + repo.name);
+      filteredRepos.push({name: repo.name, description: repo.description, ssh_url: repo.ssh_url});
+    }
+  }
+  cb(null, filteredRepos);
+}
 
 exports.actions = function(req, res, ss) {
   req.use('session');
@@ -38,31 +107,81 @@ exports.actions = function(req, res, ss) {
   req.use('admin.user.checkAuthenticated');
   return {
     repositories: function() {
-      var key = req.session.auth.github.user.login;
-      rclient.get(key, function(error, data) {
-        assert(!error, 'Error querying back-end storage' + error);
-        if (data) {
-          console.log('fetched data from redis');
-          res(null, JSON.parse(data));
+      memoize(
+        req.session.auth.github.user.login + '.repositories',
+        authenticateAndFetchUserRepos.bind(null, req),
+        res
+      );
+    },
+    examples: function() {
+      //TODO: cache invalidation!
+      memoize(
+        'Lophilo.repositories4',
+        fetchOrgRepos.bind(null, 'Lophilo'),
+        function(err, repos) {
+          console.log('filtering data');
+          if(err) { console.log('ERROROOOOOO'); return res(err); }
+          filterRepos(/lophilojs-/, repos, res);
         }
-        //res(testdata);
-        github.authenticate({
-          type: 'oauth',
-          token: req.session.oauth
-        });
-        console.log('authenticated to github');
-        github.repos.getAll({}, function(error, data) {
-          assert(!error, 'Error querying github' + error);
-          assert(data, 'Empty dataset returned by github' + data);
-          console.log('fetched data from github');
-
-          rclient.set(key, JSON.stringify(data), function(error, reply) {
-            assert(!error, 'error caching data ' + data);
-            console.log(reply);
-            res(null, data);
-          });
-        });
-      });
+      );
+    },
+    name: function() {
+      //TODO
+      res("not implemented");
+    },
+    email: function() {
+      //TODO
+      res("not implemented");
+    },
+    fork: function(reponame) {
+      //TODO: not tested
+      fork('Lophilo', reponame, res);
     }
   };
 };
+
+if(require.main === module) {
+  assert(process.env.GITHUB_USERNAME, 'export GITHUB_USERNAME=<your username>');
+  assert(process.env.GITHUB_PASSWORD, 'export GITHUB_PASSWORD=<your password>');
+  github.authenticate({
+      type: "basic",
+      username: process.env.GITHUB_USERNAME,
+      password: process.env.GITHUB_PASSWORD
+  });
+  switch(process.argv[2]) {
+    case 'fetch':
+      fetchUserRepos(function(err, data) {
+        if(err) throw err;
+        console.log(data);
+        process.exit(0);
+      });
+      break;
+    case 'fetchorg':
+      fetchOrgRepos('Lophilo', function(err, data) {
+        if(err) throw err;
+        console.log(data);
+        process.exit(0);
+      });
+      break;
+    case 'examples':
+      fetchOrgRepos('Lophilo', function(err, repos) {
+        if(err) throw err;
+        filterRepos(/lophilojs-/, repos, function(err, data) {
+          if(err) process.exit(1);
+          console.log(JSON.stringify(data, null, 4));
+        });
+        process.exit(0);
+      });
+      break;
+    case 'fork':
+      fork('Lophilo', 'testurl', function(err, data) {
+        if(err) throw err;
+        console.log('Successfully forked: ' + data);
+        process.exit(0);
+      });
+      break;
+    default:
+      console.log('param fork|fetch, got ' + process.argv[2]);
+      process.exit(1);
+  }
+}

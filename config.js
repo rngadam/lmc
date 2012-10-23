@@ -103,14 +103,21 @@ function getSshDirectory(username) {
 }
 exports.getSshDirectory = getSshDirectory;
 
-function getCheckoutName(repoUrl, username) {
+function getCheckoutName(repoUrl, username, cloneName) {
   assert(username, 'valid username required');
   var index = repoUrl.lastIndexOf('/');
   var checkoutName;
-  if (index > 0) {
+
+  if(cloneName) {
+    checkoutName = cloneName;
+  } else if (index > 0) {
     checkoutName = repoUrl.slice(index + 1);
   } else {
     checkoutName = repoUrl;
+  }
+
+  if(checkoutName.slice(-4) !== '.git') {
+    checkoutName = checkoutName + '.git';
   }
 
   return path.join(getHomeDirectory(username), checkoutName);

@@ -142,7 +142,7 @@
                 <div>
                     <li class="span2">
                         <div class="thumbnail">
-                            <a href="#new-app" role="button" class="btn" data-toggle="modal">
+                            <a href="#new-app" role="button" class="btn" data-toggle="modal" data-bind="click: examples.refresh">
                                 <img src="/icons/list-add.svg" alt="Add a new application" width=128 height=128>
                             </a>
                             <center>
@@ -268,24 +268,28 @@
 <!-- ################################## -->
 <!-- Dialog to create a new application -->
 <!-- ################################## -->
-<div class="modal hide" id="new-app" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-bind="with: apps">
+<div class="modal hide" id="new-app" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-bind="with: examples">
   <form id="modal-form" class="modal-form" data-bind="submit: createApp">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
         <h3 id="myModalLabel">New Application Wizard</h3>
       </div>
       <div class="modal-body">
+        <h4>Template</h4>
+        <select data-bind="options: items, optionsText: 'name', value: selectedItem", optionsCaption: 'Select repository to clone...'>
+        </select>
+        <span class="help-block" data-bind='text: selectedItem() ? selectedItem().description : "No value yet" '></span>
 
-          <label>Application name</label>
-          <input type="text" data-bind="value: name" placeholder="Type a name...">
-          <!--
-          <label>Github repository name</label>
-          <input type="text" placeholder="Type a repository name...">
-          <span class="help-block">should be a valid git repository name</span>
-          <label class="checkbox">
-            <input type="checkbox"> Add Socketstream template
-          </label>
-           -->
+        <h4>Application name</h4>
+        <input type="text" data-bind="value: name" placeholder="Type a name...">
+        <!--
+        <label>Github repository name</label>
+        <input type="text" placeholder="Type a repository name...">
+        <span class="help-block">should be a valid git repository name</span>
+        <label class="checkbox">
+        <input type="checkbox"> Add Socketstream template
+        </label>
+        -->
       </div> <!-- modal-body -->
       <div class="modal-footer">
         <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>

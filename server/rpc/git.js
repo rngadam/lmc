@@ -31,8 +31,8 @@ function streamBuffer(data) {
   console.log('LOG: ' + data);
 }
 
-function checkout(repoUrl, username, cb) {
-  var cloneName = config.getCheckoutName(repoUrl, username);
+function checkout(repoUrl, cloneName, username, cb) {
+  cloneName = config.getCheckoutName(repoUrl, username, cloneName);
   var sshPath = config.get('sshPath');
   var sshDir = config.getSshDirectory(username);
 
@@ -71,10 +71,11 @@ exports.actions = function(req, res, ss) {
   return {
     // takes in full repo URL and checks it out
     // using the ssh key
-    checkout: function(repoUrl) {
-      checkout(repoUrl, req.session.userId, function(err) {
+    checkout: function(repoUrl, cloneName) {
+      // TODO: validate cloneName
+      checkout(repoUrl, cloneName, req.session.userId, function(err) {
         if (err) {
-          res('Error: could not checkout repository: ' + err.stack);
+          res('Error: could not checkout repository: ' + err);
         } else {
           res(null, 'Repository has been checked out ' + repoUrl);
         }
