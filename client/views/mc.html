@@ -100,7 +100,7 @@
           <div class="accordion-group">
             <div class="accordion-heading">
               <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne" data-bind="click: versions.refresh, click: stats.refreshUptime">
-                Statistics
+                System information
               </a>
             </div>
             <div id="collapseOne" class="accordion-body collapse in">
@@ -111,6 +111,9 @@
                     <tr><td>Process ID<td> <span data-bind="text: system.process.pid"></span>
                     <tr><td>Arch<td> <span data-bind="text: system.os.arch"></span>
                     <tr><td>Free memory<td><span data-bind="text: system.os.freemem"></span>
+                    <tr><td>Total memory<td><span data-bind="text: system.os.totalmem"></span>
+                    <tr><td>Hostname<td><span data-bind="text: system.os.hostname"></span>
+                    <tr><td>Kernel<td><span data-bind="text: system.os.release"></span>
                 </table>
               </div>
             </div>
