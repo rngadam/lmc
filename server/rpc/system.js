@@ -23,13 +23,15 @@
  */
 
 var os = require('os');
-var fs = require('fs');
+var path = require('path');
 
-var versions = {
-  data: [
+function createVersions() {
+  var packageJsonPath = path.join(__dirname, '..', '..', 'package.json');
+  var packageJSON = require(packageJsonPath);
+  var data = [
     {
       name: 'Management Console',
-      version: '1.0'
+      version: packageJSON.version
     },
     {
       name: 'Hardware platform',
@@ -47,16 +49,30 @@ var versions = {
       name: 'Kernel driver',
       version: '1.0 (tabby)'
     }
-  ]
-};
-
-for (var k in process.versions) {
-  versions.data.push({name: k, version: process.versions[k]});
+  ];
+  for (var k in process.versions) {
+    data.push({
+      name: k,
+      version: process.versions[k]
+    });
+  }
+  for (var d in packageJSON.dependencies) {
+    packageJsonPath = path.join(__dirname, '..', '..', 'node_modules', d, 'package.json');
+    var dep = require(packageJsonPath);
+    data.push({
+      name: d,
+      version: dep.version
+    });
+  }
+  return data;
 }
+
+var versions = {data: null};
+
 exports.actions = function(req, res, ss) {
 
   // Easily debug incoming requests here
-  //console.log(req);
+  //req.use('debug');
 
   return {
     loadavg: function loadavg() {
@@ -64,6 +80,9 @@ exports.actions = function(req, res, ss) {
       res(null, {one: values[0], five: values[1], fifteen: values[2] });
     },
     versions: function version() {
+      if(!versions.data) {
+        versions.data = createVersions();
+      }
       res(null, versions);
     },
     uptime: function uptime() {
@@ -71,3 +90,11 @@ exports.actions = function(req, res, ss) {
     }
   };
 };
+
+function dumpInfo() {
+  console.log(JSON.stringify(createVersions(), null, 2));
+}
+
+if(require.main === module) {
+  dumpInfo();
+}
