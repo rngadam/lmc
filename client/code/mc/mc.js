@@ -23,13 +23,30 @@
 
 console.log('mc loading');
 
+function logger(model, id, err) {
+  console.log('LOGGING:' + err);
+  try {
+    model.items.push({errstring: '' + err});
+    $(id).show();
+  } catch (err) {
+    console.log('error in the error handler! ' + err.stack);
+  }
+}
+
+// TODO: add matcher for all incoming messages
+function checkError(err) {
+  if(err.match(/Access denied/)) {
+     model.user.refreshUser();
+  }
+}
+
 var AppsModel = function() {
   var self = this;
   self.items = ko.observableArray();
   self.name = ko.observable();
 
   self.createApp = function() {
-    console.log("new app name %s", this.name());
+    logSuccess("new app name %s", this.name());
     $("#new-app").modal('hide');
   }
 
@@ -44,11 +61,9 @@ var AppsModel = function() {
   self.run = function(app) {
     console.log('running app ' + app);
     ss.rpc('apps.run', app.name, function(err, url) {
-      if (err) { logError(err); }
-      if (url) {
-        console.log(url);
-        window.open(url);
-      }
+      if (err) { logError(err); return; }
+      logSuccess('opening ' + url);
+      window.open(url);
     });
   }
 
@@ -56,7 +71,7 @@ var AppsModel = function() {
     console.log('editing doc');
     ss.rpc('cloud9.edit', app.name, function(err, url) {
       if (err) { logError(err); return; }
-      console.log(url);
+      logSuccess('opening ' + url);
       window.open(url);
     });
   }
@@ -65,7 +80,7 @@ var AppsModel = function() {
     console.log('deleting app');
     ss.rpc('apps.rm', app.name, function(err, res) {
       if (err) { logError(err); return; }
-      console.log(res);
+      logSuccess(res);
       self.refresh();
     });
   }
@@ -85,7 +100,7 @@ var ProcessesModel = function() {
     console.log('killing process');
     ss.rpc('processes.kill', process.id, function(err, res) {
       if (err) { logError(err); return; }
-      console.log(res);
+      logSuccess(res);
       self.refresh();
     });
   };
@@ -93,13 +108,14 @@ var ProcessesModel = function() {
     console.log('status process');
     ss.rpc('processes.status', process.id, function(err, res) {
       if (err) { logError(err); return; }
-      console.log(res);
+      logSuccess(res);
     });
   };
   self.open = function(process) {
     console.log('opening process');
     ss.rpc('processes.open', process.id, function(err, url) {
       if (err) { logError(err); return; }
+      logSuccess('opening ' + url);
       window.open(url);
     });
   };
@@ -139,7 +155,8 @@ var StatsModel = function() {
   }
 };
 
-var ErrorsModel = function() {
+// list of items with latest
+function createItemsLatest() {
   this.items = ko.observableArray();
   this.latest = ko.computed(function() {
     if (this.items().length > 0) {
@@ -150,6 +167,9 @@ var ErrorsModel = function() {
     return 'No error!';
   }, this);
 };
+
+var ErrorsModel = createItemsLatest;
+var SuccessModel = createItemsLatest;
 
 var StatusModel = function() {
   this.connected = ko.observable(true);
@@ -185,8 +205,8 @@ var UserModel = function() {
     console.log('logging out');
     ss.rpc('auth.logout', function(err, res) {
       if (err) { logError(err); return; }
-      console.log('logged out');
       self.username('not logged in');
+      logSuccess('logged out');
     });
   }
   self.refreshUser = function() {
@@ -223,7 +243,7 @@ var ReposModel = function() {
     console.log('using sshurl ' + self.selectedItem().ssh_url);
     ss.rpc('git.checkout', self.selectedItem().ssh_url, function(err, result) {
       if (err) { logError(err); return; }
-      console.log(result);
+      logSuccess(result);
       self.refresh();
       model.apps.refresh();
     });
@@ -238,22 +258,12 @@ var model = {
   'repos': new ReposModel(),
   'user': new UserModel(),
   'errors': new ErrorsModel(),
+  'success': new ErrorsModel(),
   'status': new StatusModel()
 };
 
-
-function logError(err) {
-  console.log('LOGGING:' + err);
-  try {
-    model.errors.items.push({errstring: '' + err});
-    $('#alert-dialog').show();
-  } catch (err) {
-    console.log('error in the error handler! ' + err.stack);
-  }
-  if(err.match(/Access denied/)) {
-    model.user.refreshUser();
-  }
-}
+var logError = logger.bind(null, model.errors, '#alert-dialog');
+var logSuccess = logger.bind(null, model.success, '#success-dialog');
 
 ss.server.on('disconnect', function() {
   model.status.connected(false);

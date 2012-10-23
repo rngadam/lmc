@@ -64,7 +64,7 @@ exports.actions = function(req, res, ss) {
     open: function(id) {
       forkarator.port(id, function(err, port) {
         if(err) res(err);
-        res(null, config.createURL(port));
+        else res(null, config.createURL(port));
       });
     },
   }
