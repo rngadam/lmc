@@ -56,7 +56,7 @@ function checkout(repoUrl, cloneName, username, cb) {
     }
   ).fail(
     function(err) {
-      console.log('TEST FAILED ' + err);
+      console.log('Checkout of ' + repoUrl + " failed " + err);
       cb(err);
 
     }
