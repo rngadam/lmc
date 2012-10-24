@@ -78,3 +78,15 @@ consoleServer.listen(config.get('internalPort') + 1);
 
 // Start SocketStream
 ss.start(server);
+
+console.log('Listening on http://'
+  + config.get('hostname')
+  + ':'
+  + config.get('port')
+  + " (internal "
+  + "http://"
+  + config.get('internalHostname')
+  + ':'
+  + config.get('internalPort')
+  + ')'
+  );

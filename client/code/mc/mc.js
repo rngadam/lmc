@@ -57,7 +57,7 @@ var AppsModel = function() {
   }
 
   self.run = function(app) {
-    console.log('running app ' + app);
+    logInfo('running app ' + app.name);
     ss.rpc('apps.run', app.name, function(err, url) {
       if (err) { return logError(err); }
       logSuccess('opening ' + url);
@@ -66,7 +66,7 @@ var AppsModel = function() {
   }
 
   self.edit = function(app) {
-    console.log('editing doc');
+    logInfo('editing doc ' + app.name);
     ss.rpc('cloud9.edit', app.name, function(err, url) {
       if (err) { return logError(err); }
       logSuccess('opening ' + url);
@@ -75,9 +75,9 @@ var AppsModel = function() {
   }
 
   self.rm = function(app) {
-    console.log('deleting app');
+    logInfo('deleting app ' + app.name);
     ss.rpc('apps.rm', app.name, function(err, res) {
-      if (err) { return logError(err); }
+      if (err) { return logError  (err); }
       logSuccess(res);
       self.refresh();
     });
@@ -95,7 +95,7 @@ var ProcessesModel = function() {
     });
   }
   self.kill = function(process) {
-    console.log('killing process');
+    logInfo('killing process ' + process.id);
     ss.rpc('processes.kill', process.id, function(err, res) {
       if (err) { return logError(err); }
       logSuccess(res);
@@ -110,7 +110,7 @@ var ProcessesModel = function() {
     });
   };
   self.open = function(process) {
-    console.log('opening process');
+    logInfo('opening process ' + process.id);
     ss.rpc('processes.open', process.id, function(err, url) {
       if (err) { return logError(err); }
       logSuccess('opening ' + url);
@@ -264,8 +264,9 @@ var ReposModel =  function() {
   }
 
   self.checkoutRepository = function() {
-    console.log('checking out ' + self.selectedItem().full_name);
-    console.log('using sshurl ' + self.selectedItem().ssh_url);
+    logInfo(
+      'checking out ' + self.selectedItem().full_name
+      + ' using sshurl ' + self.selectedItem().ssh_url);
     ss.rpc('git.checkout', self.selectedItem().ssh_url, function(err, result) {
       if (err) { return logError(err); }
       logSuccess(result);
@@ -279,11 +280,13 @@ var model;
 
 var logError = console.log;
 var logSuccess = console.log;
+var logInfo = console.log;
 
 ss.rpc('system.info', function(err, system) {
   model = {
     'apps': new AppsModel(),
     'errors': new ErrorsModel(),
+    'info': new ErrorsModel(),
     'examples': new ExamplesModel(),
     'processes': new ProcessesModel(),
     'repos': new ReposModel(),
@@ -298,6 +301,7 @@ ss.rpc('system.info', function(err, system) {
   console.dir(system);
 
   logError = logger.bind(null, model.errors, '#alert-dialog');
+  logInfo = logger.bind(null, model.info, '#info-dialog');
   logSuccess = logger.bind(null, model.success, '#success-dialog');
 
   // initial model value

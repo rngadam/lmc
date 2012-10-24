@@ -22,25 +22,16 @@
  *
  */
 
-var path = require('path');
-var fs = require('fs');
 var assert = require('assert');
+var fs = require('fs');
+var os = require('os');
+var path = require('path');
 
 var INSTALL_DIR = path.resolve(path.join(__dirname, '..'));
 var LMC_DIR = __dirname;
 var USERS_DIR = path.join(LMC_DIR, 'users');
 var SSH_PATH = path.join(LMC_DIR, 'ssh');
 
-// sample config file (do not check in github!)
-// {
-//   "hostname": "HOSTNAME",
-//   "port": EXPORTED_PORT_USING_IPTABLES,
-//   "internalPort": PORT_LISTEN_TO,
-//   "clientId": "FROM_GITHUB",
-//   "clientSecret": "FROM_GITHUB",
-//   "entryPath": "/auth/github",
-//   "callbackPath": "/auth/github/callback",
-// }
 var currentConfig = null;
 
 function addAdditionalConfig(config) {
@@ -48,13 +39,19 @@ function addAdditionalConfig(config) {
 }
 
 function init() {
-  var config = JSON.parse(fs.readFileSync(path.join(__dirname, 'config.json')));
-  var hostname = config.target.hostname;
-  var port = config.target.port;
-  assert(hostname, "target hostname must be set in configuration");
-  assert(port, "target port must be set in configuration");
+  var hostname = process.env.LMC_HOSTNAME ?  process.env.LMC_HOSTNAME : os.hostname();
+  process.env.LMC_HOSTNAME = hostname;
+  console.log('using ' + hostname + ' to look for configuration (override by setting LMC_HOSTNAME');
+  try {
+    var config = JSON.parse(fs.readFileSync(path.join(__dirname, 'config.json')));
+  } catch(err) {
+    console.log(err);
+    console.log(fs.readFileSync(path.join(__dirname, 'config.json.md')));
+    process.exit(1);
+  }
+
   for (var i in config.configs) {
-    if (hostname == config.configs[i].hostname && port == config.configs[i].port) {
+    if (hostname == config.configs[i].internalHostname) {
       currentConfig = config.configs[i];
       addAdditionalConfig(currentConfig);
       return;

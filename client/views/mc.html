@@ -35,7 +35,7 @@
 <!-- ################################## -->
 <!-- Main menus -->
 <!-- ################################## -->
-
+<div class="container">
 <div class="navbar">
     <div class="navbar-inner">
         <ul class="nav nav-tabs">
@@ -367,10 +367,15 @@
   <span data-bind="text: latest().errstring"></span>
 </div>
 
-<div class="alert alert-block alert-success hide fade in" id="success-dialog" data-bind="with: success">
+<div class="alert alert-block alert-info hide fade in" id="info-dialog" data-bind="with: info">
   <button type="button" class="close" data-bind="click: closeAlert">x</button>
   <span data-bind="text: latest().errstring"></span>
 </div>
 
+<div class="alert alert-block alert-success hide fade in" id="success-dialog" data-bind="with: success">
+  <button type="button" class="close" data-bind="click: closeAlert">x</button>
+  <span data-bind="text: latest().errstring"></span>
+</div>
+</div> <!-- class="container" -->
 </body>
 </html>
