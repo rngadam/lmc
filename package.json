@@ -1,7 +1,7 @@
 {
   "name": "lmc",
   "description": "Lophilo Management Console",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "author": "Ricky Ng-Adam <rngadam@lophilo.com>",
   "private": true,
   "engines": {
@@ -17,7 +17,7 @@
     "forkarator": "0.1.x",
     "github": "~0.1.5",
     "gitmanager": "0.1.x",
-    "lophilo": "0.0.x",
+    "lophilo": "0.2.x",
     "mkdirp": "~0.3.4",
     "redis": "~0.8.1",
     "socketstream": "0.3.x",
