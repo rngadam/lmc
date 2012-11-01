@@ -95,20 +95,35 @@ function filterRepos(match, repos, cb) {
     var repo = repos[i];
     if(repo.name && repo.name.match(match)) {
       console.log('found ' + repo.name);
-      filteredRepos.push({name: repo.name, description: repo.description, ssh_url: repo.ssh_url});
+      filteredRepos.push({
+        name: repo.name,
+        description: repo.description,
+        ssh_url: repo.ssh_url
+      });
     }
   }
   cb(null, filteredRepos);
 }
 
+function getRepositoriesKey(req) {
+  return req.session.auth.github.user.login + '.repositories';
+}
+
+function getExamplesKey(req) {
+  return 'Lophilo.repositories';
+}
 exports.actions = function(req, res, ss) {
   req.use('session');
   //req.use('debug');
   req.use('admin.user.checkAuthenticated');
+
   return {
+    flush: function() {
+      redisClient.del(getRepositoriesKey(req), getExamplesKey(req), res);
+    },
     repositories: function() {
       memoize(
-        req.session.auth.github.user.login + '.repositories',
+        getRepositoriesKey(req),
         authenticateAndFetchUserRepos.bind(null, req),
         res
       );
@@ -116,7 +131,7 @@ exports.actions = function(req, res, ss) {
     examples: function() {
       //TODO: cache invalidation!
       memoize(
-        'Lophilo.repositories4',
+        getExamplesKey(req),
         fetchOrgRepos.bind(null, 'Lophilo'),
         function(err, repos) {
           console.log('filtering data');

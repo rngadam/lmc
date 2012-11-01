@@ -83,10 +83,17 @@ console.log('Listening on http://'
   + config.get('hostname')
   + ':'
   + config.get('port')
-  + " (internal "
-  + "http://"
+  + ' (internal '
+  + 'http://'
   + config.get('internalHostname')
   + ':'
   + config.get('internalPort')
   + ')'
   );
+if(config.get('port') < 1024 && config.get('port') != config.get('internalPort')) {
+  console.log('Do not forget to forward from port '
+    + config.get('port')
+    + ' to '
+    + config.get('internalPort')
+    + ' (see iptables.sh for example)');
+}

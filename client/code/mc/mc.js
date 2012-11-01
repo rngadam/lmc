@@ -227,8 +227,11 @@ var ExamplesModel = function() {
   self.createApp = function() {
     logSuccess("new app name " + this.name() + " from " + self.selectedItem().ssh_url);
     $("#new-app").modal('hide');
-    ss.rpc('git.checkout', self.selectedItem().ssh_url, self.name())
-    model.apps.refresh();
+    ss.rpc('git.checkout', self.selectedItem().ssh_url, self.name(), function(err, result) {
+      if (err) { return logError(err); }
+      model.apps.refresh();
+      logSuccess(result);
+    });
   }
 
   self.selectItem = function(item) {
@@ -243,6 +246,12 @@ var ExamplesModel = function() {
         logError('No examples available!');
       }
       self.items(repos);
+    });
+  }
+  self.flush = function() {
+    ss.rpc('github.flush', function(err, repos) {
+      if (err) { return logError(err); }
+      self.refresh();
     });
   }
 };

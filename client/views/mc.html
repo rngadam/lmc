@@ -278,8 +278,8 @@
         <h4>Template</h4>
         <select data-bind="options: items, optionsText: 'name', value: selectedItem", optionsCaption: 'Select repository to clone...'>
         </select>
+        <button type="button" data-bind="click: flush">Refresh</button>
         <span class="help-block" data-bind='text: selectedItem() ? selectedItem().description : "No value yet" '></span>
-
         <h4>Application name</h4>
         <input type="text" data-bind="value: name" placeholder="Type a name...">
         <!--
@@ -309,7 +309,7 @@
   <div class="modal-body" data-bind="with: repos">
     <p>Available repositories:</p>
     <select data-bind="options: items, optionsText: 'full_name', value: selectedItem", optionsCaption: 'Select repository to checkout...'>
-    </select>
+    </select><button type="button" data-bind="click: flush">Refresh</button>
   </div> <!-- modal-body -->
 
   <div class="modal-footer">

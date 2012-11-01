@@ -41,7 +41,7 @@ function addAdditionalConfig(config) {
 function init() {
   var hostname = process.env.LMC_HOSTNAME ?  process.env.LMC_HOSTNAME : os.hostname();
   process.env.LMC_HOSTNAME = hostname;
-  console.log('using ' + hostname + ' to look for configuration (override by setting LMC_HOSTNAME');
+  console.log('using ' + hostname + ' to look for configuration (override by setting LMC_HOSTNAME)');
   try {
     var config = JSON.parse(fs.readFileSync(path.join(__dirname, 'config.json')));
   } catch(err) {
@@ -79,7 +79,7 @@ function getNodePath() {
 exports.getNodePath = getNodePath;
 
 function getCloud9Path() {
-  return path.join(getInstallDir(), 'cloud9');
+  return path.join(LMC_DIR, 'cloud9');
 }
 exports.getCloud9Path = getCloud9Path;
 
