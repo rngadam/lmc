@@ -3,5 +3,7 @@ users/*
 config.json
 npm-debug.log
 */.sessions/*
-*/.c9revisions/*
-*/.settings/*
+.c9revisions/*
+.settings/*
+.settings
+cloud9/*
