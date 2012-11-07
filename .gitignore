@@ -1,4 +1,4 @@
-node_modules/*
+node_modules
 users/*
 config.json
 npm-debug.log
@@ -6,4 +6,4 @@ npm-debug.log
 .c9revisions/*
 .settings/*
 .settings
-cloud9/*
+cloud9
