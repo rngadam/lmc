@@ -26,6 +26,7 @@ var ss = require('socketstream');
 var everyauth = require('everyauth');
 var assert = require('assert');
 var localconfigs = require('ss-localconfigs');
+var dnodeloader = require('dnode-dynamicloader');
 
 var path = require('path');
 var config = require(path.join(__dirname, 'config.js'));
@@ -44,6 +45,7 @@ everyauth.github
     })
   .redirectPath('/');
 
+ss.http.middleware.prepend('/dnode', dnodeloader.handleRequest);
 ss.http.middleware.prepend(ss.http.connect.bodyParser());
 ss.http.middleware.append(everyauth.middleware());
 
@@ -69,6 +71,7 @@ if (ss.env === 'production') ss.client.packAssets();
 // Start web server
 var server = http.Server(ss.http.middleware);
 server.listen(config.get('internalPort'), '0.0.0.0');
+
 
 // Start Console Server (REPL)
 // To install client: sudo npm install -g ss-console
@@ -97,3 +100,11 @@ if(config.get('port') < 1024 && config.get('port') != config.get('internalPort')
     + config.get('internalPort')
     + ' (see iptables.sh for example)');
 }
+
+var spawn = require('child_process').spawn;
+spawn(
+  '/usr/bin/avahi-publish',
+  ['-s', 'lmc', '_http._tcp', config.get('port')],
+  {
+    stdio: 'inherit'
+  });
