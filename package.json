@@ -14,7 +14,7 @@
     "assert": "~0.4.9",
     "connect-redis": "~1.4.4",
     "everyauth": "~0.3.0",
-    "forkarator": "0.1.x",
+    "forkarator": "0.2.x",
     "github": "~0.1.5",
     "gitmanager": "0.1.x",
     "lophilo": "0.2.x",

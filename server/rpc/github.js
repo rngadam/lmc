@@ -114,12 +114,15 @@ function getExamplesKey(req) {
 }
 exports.actions = function(req, res, ss) {
   req.use('session');
-  //req.use('debug');
+  req.use('debug');
   req.use('admin.user.checkAuthenticated');
 
   return {
-    flush: function() {
-      redisClient.del(getRepositoriesKey(req), getExamplesKey(req), res);
+    flushRepositories: function() {
+      redisClient.del(getRepositoriesKey(req), res);
+    },
+    flushExamples: function() {
+      redisClient.del(getExamplesKey(req), res);
     },
     repositories: function() {
       memoize(
@@ -135,7 +138,7 @@ exports.actions = function(req, res, ss) {
         fetchOrgRepos.bind(null, 'Lophilo'),
         function(err, repos) {
           console.log('filtering data');
-          if(err) { console.log('ERROROOOOOO'); return res(err); }
+          if(err) { console.error('ERROROOOOOO'); return res(err); }
           filterRepos(/lophilojs-/, repos, res);
         }
       );

@@ -30,7 +30,13 @@ var script = path.join(__dirname, 'forkide.js');
 function startCloud9(directory, cb) {
   assert(directory, 'location of git repository required');
   var id = directory;
-  forkarator.start(id, script, [id, directory], { cwd: directory }, cb);
+  try {
+    forkarator.server.start(id, script, [id, directory], { cwd: directory }, cb);
+  } catch(e) {
+    console.error(e.stack);
+    cb(e);
+  }
+  
 }
 
 exports.actions = function(req, res, ss) {

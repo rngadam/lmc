@@ -31,80 +31,94 @@ var dnodeloader = require('dnode-dynamicloader');
 var path = require('path');
 var config = require(path.join(__dirname, 'config.js'));
 
-everyauth.github
-  .appId(config.get('clientId'))
-  .appSecret(config.get('clientSecret'))
-  .entryPath(config.get('entryPath'))
-  .callbackPath(config.get('callbackPath'))
-  .scope('repo')
-  .findOrCreateUser(function(session, accessToken, accessTokenExtra, githubUserMetadata) {
-      session.oauth = accessToken;
-      session.userId = githubUserMetadata.login;
-      session.save();
-      return session.userId;
-    })
-  .redirectPath('/');
-
-ss.http.middleware.prepend('/dnode', dnodeloader.handleRequest);
-ss.http.middleware.prepend(ss.http.connect.bodyParser());
-ss.http.middleware.append(everyauth.middleware());
-
-ss.session.store.use('redis');
-ss.publish.transport.use('redis');
-
-localconfigs.applyConfigs(
-    ss,
-    path.join(__dirname, 'client/code'), '.socketstream.json');
-
-// Code Formatters
-ss.client.formatters.add(require('ss-stylus'));
-
-// Use server-side compiled Hogan (Mustache) templates. Others engines available
-ss.client.templateEngine.use(require('ss-hogan'));
-
-// middleware
-//require('./server/backup/auth').configureEveryAuth(ss);
-
-// Minimize and pack assets if you type: SS_ENV=production node app.js
-if (ss.env === 'production') ss.client.packAssets();
-
-// Start web server
-var server = http.Server(ss.http.middleware);
-server.listen(config.get('internalPort'), '0.0.0.0');
-
-
-// Start Console Server (REPL)
-// To install client: sudo npm install -g ss-console
-// To connect: ss-console <optional_host_or_port>
-var consoleServer = require('ss-console')(ss);
-consoleServer.listen(config.get('internalPort') + 1);
-
-// Start SocketStream
-ss.start(server);
-
-console.log('Listening on http://'
-  + config.get('hostname')
-  + ':'
-  + config.get('port')
-  + ' (internal '
-  + 'http://'
-  + config.get('internalHostname')
-  + ':'
-  + config.get('internalPort')
-  + ')'
-  );
-if(config.get('port') < 1024 && config.get('port') != config.get('internalPort')) {
-  console.log('Do not forget to forward from port '
+function configOutput() {
+  console.log('Listening on http://'
+    + config.get('hostname')
+    + ':'
     + config.get('port')
-    + ' to '
+    + ' (internal '
+    + 'http://'
+    + config.get('internalHostname')
+    + ':'
     + config.get('internalPort')
-    + ' (see iptables.sh for example)');
+    + ')'
+    );
+  if(config.get('port') < 1024 && config.get('port') != config.get('internalPort')) {
+    console.log('Do not forget to forward from port '
+      + config.get('port')
+      + ' to '
+      + config.get('internalPort')
+      + ' (see iptables.sh for example)');
+  }
+
+  var spawn = require('child_process').spawn;
+  spawn(
+    '/usr/bin/avahi-publish',
+    ['-s', 'lmc', '_http._tcp', config.get('port')],
+    {
+      stdio: 'inherit'
+    });
 }
 
-var spawn = require('child_process').spawn;
-spawn(
-  '/usr/bin/avahi-publish',
-  ['-s', 'lmc', '_http._tcp', config.get('port')],
-  {
-    stdio: 'inherit'
-  });
+function main() {
+  everyauth.github
+    .appId(config.get('clientId'))
+    .appSecret(config.get('clientSecret'))
+    .entryPath(config.get('entryPath'))
+    .callbackPath(config.get('callbackPath'))
+    .scope('repo')
+    .findOrCreateUser(function(session, accessToken, accessTokenExtra, githubUserMetadata) {
+        console.log('findOrCreateUser');
+        session.oauth = accessToken;
+        session.userId = githubUserMetadata.login;
+        session.save();
+        return session.userId;
+      })
+    .redirectPath('/');
+
+  ss.http.middleware.prepend('/dnode', dnodeloader.handleRequest);
+  ss.http.middleware.prepend(ss.http.connect.bodyParser());
+  ss.http.middleware.append(everyauth.middleware());
+
+  ss.session.store.use('redis');
+  ss.publish.transport.use('redis');
+
+  localconfigs.applyConfigs(
+      ss,
+      path.join(__dirname, 'client/code'), 
+      '.socketstream.json');
+
+  // Code Formatters
+  ss.client.formatters.add(require('ss-stylus'));
+
+  // Use server-side compiled Hogan (Mustache) templates. Others engines available
+  ss.client.templateEngine.use(require('ss-hogan'));
+
+  // middleware
+  //require('./server/backup/auth').configureEveryAuth(ss);
+
+  // Minimize and pack assets if you type: SS_ENV=production node app.js
+  if (ss.env === 'production') ss.client.packAssets();
+
+  // Start web server
+  var server = http.Server(ss.http.middleware);
+  server.listen(
+    config.get('internalPort'), 
+    '0.0.0.0',
+    configOutput);
+
+
+  // Start Console Server (REPL)
+  // To install client: sudo npm install -g ss-console
+  // To connect: ss-console <optional_host_or_port>
+  var consoleServer = require('ss-console')(ss);
+  consoleServer.listen(config.get('internalPort') + 1);
+
+  // Start SocketStream
+  ss.start(server);
+
+}
+
+if (require.main === module) {
+  main();
+}

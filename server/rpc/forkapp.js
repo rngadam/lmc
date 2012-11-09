@@ -23,23 +23,20 @@
  */
 var forkarator = require('forkarator');
 
-function setup(id, appPath) {
-  forkarator.setup(id, process);
+function setup(appPath) {
   var app = require(appPath);
   app.main(function(err, port) {
     if (err) throw err;
     console.log('Listening on port %d', port);
-    forkarator.register(id, port);
+    forkarator.client.register(port);
   });
 }
 
 if (require.main === module) {
   // argument 0: node bin path
   // argument 1: this script name
-  // argument 2: the id that we want to register as
   // argument 3: path to socketstream app.js app
-  var id = process.argv[2];
-  var appPath = process.argv[3];
-  console.log('forking id: %s, path: %s', id, appPath);
-  setup(id, appPath);
+  var appPath = process.argv[2];
+  console.log('forking path: %s', appPath);
+  setup(appPath);
 }

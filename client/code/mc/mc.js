@@ -241,15 +241,14 @@ var ExamplesModel = function() {
   self.refresh = function() {
     ss.rpc('github.examples', function(err, repos) {
       if (err) { return logError(err); }
-      console.dir(repos);
-      if(!repos.length) {
-        logError('No examples available!');
+      if(!repos && !repos.length) {
+        return logError('No examples available!');
       }
       self.items(repos);
     });
   }
   self.flush = function() {
-    ss.rpc('github.flush', function(err, repos) {
+    ss.rpc('github.flushExamples', function(err, repos) {
       if (err) { return logError(err); }
       self.refresh();
     });
@@ -271,7 +270,12 @@ var ReposModel =  function() {
       self.items(repos);
     });
   }
-
+  self.flush = function() {
+    ss.rpc('github.flushRepositories', function(err, repos) {
+      if (err) { return logError(err); }
+      self.refresh();
+    });
+  }
   self.checkoutRepository = function() {
     logInfo(
       'checking out ' + self.selectedItem().full_name

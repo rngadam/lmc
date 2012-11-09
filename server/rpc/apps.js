@@ -33,7 +33,7 @@ function run(directory, cb) {
   var app = path.join(directory, 'app.js');
   console.log('Running ' + app);
   var id = app;
-  forkarator.start(id, forkerPath, [id, app], { cwd: directory }, cb);
+  forkarator.server.start(id, forkerPath, [id, app], { cwd: directory }, cb);
 }
 
 exports.actions = function(req, res, ss) {

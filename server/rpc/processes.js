@@ -41,7 +41,7 @@ exports.actions = function(req, res, ss) {
   req.use('admin.user.checkAuthenticated');
   return {
     list: function() {
-      forkarator.list(function(err, childs) {
+      forkarator.server.list(function(err, childs) {
         var data = [];
         for (var id in childs) {
           console.dir(childs[id]);
@@ -56,13 +56,13 @@ exports.actions = function(req, res, ss) {
       });
     },
     kill: function(id) {
-      forkarator.stop(id, res);
+      forkarator.server.stop(id, res);
     },
     status: function(id) {
-      forkarator.status(id, res);
+      forkarator.server.status(id, res);
     },
     open: function(id) {
-      forkarator.port(id, function(err, port) {
+      forkarator.server.port(id, function(err, port) {
         if(err) res(err);
         else res(null, config.createURL(port));
       });
