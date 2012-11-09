@@ -77,6 +77,8 @@ function main() {
     .redirectPath('/');
 
   ss.http.middleware.prepend('/dnode', dnodeloader.handleRequest);
+  ss.http.middleware.prepend('/dnodefork', dnodeloader.handleRequestFork);
+
   ss.http.middleware.prepend(ss.http.connect.bodyParser());
   ss.http.middleware.append(everyauth.middleware());
 
