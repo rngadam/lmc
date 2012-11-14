@@ -87,7 +87,7 @@ function main() {
 
   localconfigs.applyConfigs(
       ss,
-      path.join(__dirname, 'client/code'), 
+      path.join(__dirname, 'client/code'),
       '.socketstream.json');
 
   // Code Formatters
@@ -105,9 +105,8 @@ function main() {
   // Start web server
   var server = http.Server(ss.http.middleware);
   server.listen(
-    config.get('internalPort'), 
-    '0.0.0.0',
-    configOutput);
+    config.get('internalPort'),
+    '0.0.0.0');
 
 
   // Start Console Server (REPL)
@@ -117,7 +116,7 @@ function main() {
   consoleServer.listen(config.get('internalPort') + 1);
 
   // Start SocketStream
-  ss.start(server);
+  ss.start(server, configOutput);
 
 }
 
