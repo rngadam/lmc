@@ -52,12 +52,15 @@ function configOutput() {
   }
 
   var spawn = require('child_process').spawn;
-  spawn(
+  var avahipublish = spawn(
     '/usr/bin/avahi-publish',
     ['-s', 'lmc', '_http._tcp', config.get('port')],
     {
       stdio: 'inherit'
     });
+  avahipublish.on('exit', function() {
+    console.log.error('WARNING: avahi-publish exited');
+  });
 }
 
 function main() {
@@ -106,17 +109,19 @@ function main() {
   var server = http.Server(ss.http.middleware);
   server.listen(
     config.get('internalPort'),
-    '0.0.0.0');
+    '0.0.0.0',
+    configOutput);
 
-
-  // Start Console Server (REPL)
-  // To install client: sudo npm install -g ss-console
-  // To connect: ss-console <optional_host_or_port>
-  var consoleServer = require('ss-console')(ss);
-  consoleServer.listen(config.get('internalPort') + 1);
+  if(config.get('console')) {
+    // Start Console Server (REPL)
+    // To install client: sudo npm install -g ss-console
+    // To connect: ss-console <optional_host_or_port>
+    var consoleServer = require('ss-console')(ss);
+    consoleServer.listen(config.get('internalPort') + 1);
+  }
 
   // Start SocketStream
-  ss.start(server, configOutput);
+  ss.start(server);
 
 }
 
